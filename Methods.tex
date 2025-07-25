@@ -1,0 +1,80 @@
+\section{Study 1: Phylo2Vec}
+\subsection{Definitions}
+Birth-death process.
+Setup: for a rooted tree with $n$ leaves, we assume that leaf nodes are labelled 0 to $n-1$ and internal nodes $n$ to $2(n-1)$. The root is always $2(n-1)$. The branches are also labelled according to their descendant (e.g., leaf branches are labelled according to their leaf, so the branch whose target is leaf $1$ is labelled as $1$).
+Goal: reduce a tree object into a vector which describes the order in which leaves are successively added to form the tree. We start with a 2-leaf tree with leaves $0$, $1$, and the vector will describe where to add the new leaves to form the tree.
+Ordered trees = binary trees where each leaf is successively added such that it forms a cherry with another leaf. The new leaf branches thus stem from another leaf branch. Subset of all trees: n!
+Phylo2Vec = ordered trees but allows for branches stemming from "internal branches". Bijective to tree space. Sketch of proof.
+\subsection{Unrolling a vector to a tree}
+Unrolling a vector to a tree occurs in several steps. First, we form a list of "pairs", a 2-tuple where the first element is a numbered branch, and the second element is the leaf to be added. To fill the list, we devised the following algorithm: \textcolor{red}{algorithm}. A naive implementation using insert operations for "unordered" nodes and append operations for "ordered" nodes has a best-case complexity of O(n) (all append), average complexity of O(n$^1.5$), and worse-case complexity of O(n$^2$) (all insert). An optimized implementation makes use of Adelson-Velsky and Landis trees (AVL), where insert operation are O(log n), thus result in an O(n log n) best, average, and worst-case complexity.
+
+From this list of pairs, we build a second intermediary object called an "ancestry" matrix, which consists in a list of cherries, described in (child1, child2, parent) triplets. From there, we can build a Newick string by iteratively merging Newick substrings fro the ancestry matrix. The ancestry matrix can be viewed as some sort of post-order traversal, and shares similarities with the "operations" object in BEAGLE.
+
+\textcolor{red}{Figure: a = vector to list of pairs, b = list of pairs to ancestry, c = ancestry to Newick}
+
+\subsection{Compressing a Newick tree to a vector}
+
+Parse Newick from left to right to form an ancestry $\rightarrow$ re-order the ancestry: this is intuitive when parent nodes are provided. Without parent annotations, \textcolor{red}{describe algorithm}. The implementation is O(n log n) due to the use of Fenwick trees, a stucture to store prefix sums, to build the vector.
+
+\subsection{Phylo2Mat}
+Phylo2Mat = Phylo2Vec with branch length annotations. \textcolor{red}{Add rule for how BLs are added}. Several extra rules had to be added to ensure bijectivity.
+
+\subsection{Implementation}
+
+An original implementation was performed in Python, using numpy for vector operations and numba for speedups using just-in-time compilation. The current implementations aims to broaden the scope of the original implementation to make it available in both Pyton and R, with core functions written in Rust. CI/CD with GitHub Actions, and documentation is provided via ReadTheDocs.
+
+\textcolor{red}{why rust?}
+
+The current implementation features an increasing range of operations: cophenetic distances, graph operations, and skeletons for phylogenetic inference in Python.
+
+\subsection{Properties}
+We have been interested in studying four properties of Phylo2Vec/Phylo2Mat objects: compressibility, fast sampling, fast comparison, and their metricness.
+
+For sampling and comparison, we perform benchmarking experiments for $n$ = 10,000 to $n$ = 100,000 leaves. We benchmark both the Rust and Python endpoints, using $x$ random unordered trees per round. For all benchmarks, we compare against ape in R, and dendropy, and ete3 in Python.
+
+For distance measure, we employ a simple Hamming distance measure between vectors, and we compare it to traditional distance measures between trees: number of \gls{spr}, \gls{rf}, and \gls{kf}.
+
+\subsubsection{Maintenance and status of the software}
+Workshop, plans to delve deeper into inference-based operations.
+
+\subsection{Phylogenetic inference possibilities}
+To evaluate the potential of Phylo2Vec as a basis for phylogenetic inference operations, we devised a simple hill-climbing scheme where we pick an index of $v$, swap its value for a new random value in $0$, $2i-1$.
+
+\subsubsection{Evaluation}
+We evaluate
+
+\section{Study 2: bcov3d}
+\subsection{Data}
+We use structures from PDB, mostly from Cov3d \textcolor{red}{citation needed}. We augment the dataset using similarity searches of structures from several major coronavirus species: SARS-CoV-2, SARS-CoV, OC-43, MERS-CoV, \textcolor{red}{finish}. This augments the dataset from ~1,900 to ~2,100 structures.
+
+\subsection{Preprocessing}
+Sequence filtering, alignment, trimming, deduplication, sampling (clustering?)
+
+\subsection{Modelling}
+We start with a single basic IQ-TREE run with MFP to determine the best substitution model according to \gls{bic}.
+Mixture modelling with MAST.
+
+\subsection{Domain analysis}
+We use InterProScan to parse informations from different domains. We start with AA, and map the coordinates found in AA to 3di.
+
+\section{Study 3: chickens}
+\subsection{Data}
+We had to delete video data where we could see technicians due to ethics.
+
+\section{Data sources}
+\subsection{Study 1: phylogenetic trees}
+Binary phylogenetic trees
+\subsection{Study 2: protein structures}
+Gene sequences
+\subsection{Study 3: broiler chickens}
+ross chickens
+two weeks
+\subsubsection{Pilot study}
+Pilot study: 3 groups = control, e. coli, e. coli + vax
+\subsubsection{Multipath study}
+Multipath
+\subsubsection{Campy}
+Campy x2
+
+
+\subsection{Data processing}

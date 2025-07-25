@@ -1,0 +1,86 @@
+genomics, proteomics, phenomics
+
+\section{Pandemic preparedness}
+
+Definition, objectives. past pandemics, advent of sequencing in SARS-CoV-2. Current challenges.
+
+\section{A primer on phylogenetics}
+The overarching goal of phylogenetics is to study the evolutionary relationships between entities (or taxa). These can range from single individuals to any kind of taxonomic rank. The overwhelming majority of phylogenetic studies pertain to biological organisms \cite{felsenstein2004, yang2014, stadler2024}, but many researchers in historical linguistics have used phylogenetics to study the evolution of languages~\cite{greenhill2023}. The central object of phylogenetics is the phylogenetic tree, which depicts the evolutionary history of the observed entities. 
+
+This tree is inferred (tasked called \textit{phylogenetic inference}) by comparing characteristics or data from the observed entities. Darwin, a pioneer of phylogenetics, in his finch experiment, compared the beaks of finches. This data is to be morphological. Nowadays, the most common type of data comes from genetic sequences (conservation of DNA etc., fundamental dogma of biology).
+
+\subsection{Phylogenetic trees}
+
+From a computer science perspective, a phylogenetic tree consists of a set of nodes connected by edges (also called \textit{branches}) which form an acyclic graph: any two nodes are connected by exactly 1 path. An edge always connects a \textit{child} or \textit{descendant} node to a \textit{parental} node; it can have a specific length (also called \textit{branch length}), which measures the amount of changes (or evolution) between the parent and its child. Nodes can be divided into two categories. First, \textit{leaf nodes} are said to be of degree-1 as they are connected to only 1 neighbour: their most recent ancestor. They do not have any chidlren/descendants. Non-leaf nodes are also called \textit{ancestral}, or \textit{internal nodes}: they have at least one descendant. Their placement is usually inferred from observable data (from the entities of interest; see later). From a biological perspective, \textit{leaf} nodes constitute the observed entities of interest, while \textit{ancestral} nodes constitute the \gls{mrca} of all tips that descend from it. They are not observable in the present.
+
+A tree is said to be \textit{labelled} if its leaf nodes are assigned to a specific entity. A tree with no information on labels and on branch lengths is called a \textit{topology}, as it only contains information on the connectedness between the different nodes.
+
+A tree is said to be \textit{rooted} if it satisfies the two following conditions: i) the edges are directed from parent to child, and ii) the tree includes a node, called the \textit{root}, which serves as the \gls{mrca} of all taxa of interest. A tree where edges are undirected (or bidirectional) and no root is called \textit{unrooted}.
+
+A rooted tree is said to be \textit{ultrametric} if the sum of the branch lengths from each leaf to the root is constant.
+
+A tree is said to be \textit{binary} or \textit{bifurcating} if each internal node is connected to exactly two children. In other words, leaves are of degree 1, and internal nodes of degree 3 (two children and one parent), except the root for rooted trees which is of degree 2 (only two children). It's the easiest (and most common) form of tree used in phylogenetics.
+
+More generally, a tree is said to be \textit{n-ary} if each internal node is connected to \textit{at most} $n$ children. Edge cases include $n = 0$ (a single point) and $n = 1$, a straight line. In phylogenetics, an internal node which has more than 2 children is called a \textit{polytomy}.
+
+Table: biology vs. computer science terms
+
+\textcolor{red}{figure on trees}
+
+A key challenge in phylogenetic inference is the vastness of tree space. For a problem set with $n$ taxa, there are $1\cdot3\cdot5\cdot\ldots\cdot (2n-5) \cdot (2n-3) = (2n-3)!!$ binary labelled trees~\cite{cavallisforza1967}. For $n$ = 53 taxa, this number exceeds estimates of the number of charged particles in the observable universe~\cite{eddington1946}. We thus have a need for efficient data structures to store and compare trees, and algorithms to sample trees and perform optimization operations.
+
+\subsection{Representing trees}
+
+In computer science, traditional ways to represent trees include linked lists or recursive classes, using a node class with attributes for data and references to its children. Through counting trees, several methods have been proposed to compress a tree with $n$ leaves into a single-integer representation~\cite{rotem1978, proskurowski1980, rohlf1983, palacios2022}. However, they are not practical for real-world applications, not human-readable and would require unfolding/refolding each time.
+
+In the 1990s, two formats were proposed for phylogenetic applications: pair matching~\cite{diaconis1998} and the so-called Newick format~\cite{olsen1990, felsenstein2004}, which has become the \textit{de facto} standard in phylogenetic software. It consists of a set of nested parentheses which enclosed pairs of subtrees or pairs of nodes. What makes the Newick format attractive is its flexibility, as we can add plenty of annotations (e.g., branch lengths). While sufficiently human-readable for small trees, it quickly becomes difficult to compare trees, even tree topologies for large numbers of taxa. A key thing is that the Newick format is not bijective to the space of (binary) trees, as the order subtrees within each enclosed set of parentheses can be permuted. It is also not intuitive to sample random trees using this format. 
+
+A desirable final object to encode trees is a vector. It is one of the most memory efficient objects to collect data in many programming languages \textcolor{red}{citation needed}. Prior to the current work, a few representations have been proposed such as graph polynomials~\cite{liu2021, liu2022} the compact bijective ladderized vector (CBLV)~\cite{voznica2022}. However, these formats have not been dedicated for tree sampling or phylogenetic inference. CBLV has been used for deep learning-based inference of model parameters, and the graph polynomial was used for tree clustering and model selection.
+
+\subsection{Phylogenetic inference}
+\label{sec:bkg_phylo_inference}
+
+At its core, phylogenetic inference aims at estimating a (binary) phylogenetic tree $T$ from data for $n$ entities or taxa. Before the advent of sequencing~\cite{sanger1977}, phylogeneticists relied on compare phenotypical features, e.g., morphology in animals. By calculating distances between these features, we can recursively pair close neighbours to form a phylogenetic tree: this is known as neighour joining (NJ)~\cite{saitou1987}. Nowadays, with the advent of sequences, other methods have been found to be more precise than such distance-based methods. These methods leverage Markov models of substitution, which allow to compute the probabilities of different substitutions (i.e., the replacement of a base by another). In DNA, substitution are divided into transitions (interchanges of two bases of the same family: A-G for purines, C-T for pyrimidines), and transversions (interchanges of two bases by different families, e.g., A-C). For DNA, the most naive model is the Jukes-Cantor model~\cite{jukes1969}, which assumes that all substitutions are equally likely to happen, i.e., p(A$\rightarrow$G) = p(A$\rightarrow$C) = p(A$\rightarrow$T) = 1/3. More sophisticated models make additional assumptions regarding evolutionary processes, i.e., with the general time-reversible (GTR) model~\cite{tavare1986} being the most general model.
+
+Using these substitution models, we can derive a recursive likelihood function for a binary tree. This is called Felsenstein's likelihood~\cite{felsenstein1973}. With these two attributes, we can implement maximum likelihood-based algorithms, starting from a sensible tree (e.g., from neighbour joining) and optimizing the tree by trying tree moves. These can be very local, such as \gls{nni}, or more general, such as \gls{spr}, \gls{tbr}. Popular software include IQ-TREE~\cite{minh2020} and RAxML-NG~\cite{kozlov2019}. Bayesian frameworks also operate with substitution models and Felsenstein's likelihood, but use MCMC: MrBayes~\cite{huelsenbeck2001} and BEAST~\cite{bouckaert2014, baele2025}. \textcolor{red}{Provide better explanation for Bayesian phylo}.
+
+\subsection{Structure-based phylogenetics}
+
+Structures are posited to be more conserved than sequences~\cite{illergaard2009}. Homologous proteins are more likely to reflect evolutionary constraints and functional similarities than raw DNA sequences.
+
+Comparing structures is naturally more difficult than sequences; it consists in one or more chains that are folded into complex 3D conformations influenced by spatial and physicochemical interactions, while sequences are simply linear arrangements of residues (nucleotides or amino acids) that can be directly aligned and compared.
+
+For deep phylogenetics, this can be very cool as very divergent sequences can actually have very similar structures \textcolor{red}{citation needed}
+
+Original methods for comparing protein structures were distance-based, using methods to "align" protein structures such as TM-align~\cite{zhang2005}. With the advent of new protein structure prediction models such as AlphaFold~\cite{jumper2021, gomez2024, abramson2024}, ColabFold~\cite{mirdita2022}, and ESM~\cite{lin2023, hayes2025}, it would be tempting to i) fold a whole bunch of proteins - this has created lots of large-scale protein atlases~\cite{varadi2022, lin2023, kim2025b} and ii) potentially compare embeddings from these models for downstream phylogenetic analysis. While it has been shown that these models do capture some signal~\cite{lupo2022, tule2025}, as of now these models are of limited precision out of the box when it comes to variants of a same species due to the coarseness of their training set~\cite{gomez2024}.
+
+In parlallel, other have been made to discretize structures into a sequence of finite states to be able to perform similar maximum-likelihood based methods (see \nameref{sec:bkg_phylo_inference}). These exploit geometrical conformations of $C_\alpha$ atoms and/or their angles. The most popular is 3Di, a learnable discretizer based on a \gls{vqvae} trained on $\approx$ 10,000 protein sequences that maps geometrical angles and distances between $C_\alpha$ atoms to a discrete state. A burgeoning body of literature has worked on the 3di alphabet for various phylogenetic analyses~\cite{moi2023, puente2023}, but none have looked at the pandemic preparedness angle.
+
+% \item Structure-based phylogenetics
+% \begin{itemize}
+%     \item protein folding
+%     \item protein structures: ternary, quaternary etc
+%     \item domains
+%     \item protein structure prediction
+%     \item 3di
+% \end{itemize}
+
+\section{Animal welfare for pandemic preparedness}
+
+The past pandemics have all been of zoonotic origin. This is bound to become increasingly common with climate change and deforestation which displace these animals and make them be closer in contact with humans. Although getting increasingly cheaper and accessible, sequencing and protein folding remain poorly scalable when it comes to monitoring animal reservoirs. Something about farming and food security. Current flu epidemic. There is thus a strong demand for tools that could help monitor such reservoirs as well as livestock while minimizing contact with populations. The deep learning revolution~\cite{lecun2015} has catalysed the production of a plethora of methods for the estimation of pose in humans and animals as well as object tracking. This has become very popular in behavioral neuroscience, as these can help put actual numbers and measurements to behavioral experiments~\cite{mathis2018, graving2019, gunel2019, pereira2022, lauer2022}. The most popular is \gls{dlc}~\cite{mathis2018}, which has greatly contributed to making these methods accessible to scientists with little training in computer science. However, their potential for large-scale (i.e, lots of objects) experiments remains relatively unexplored. One interesting case is poultry farming: chickens can carry avian flu, are susceptible to be in contact with tons of wild birds, and they are a super important food source for humans.
+
+\subsection{Video surveillance}
+
+\subsection{Challenges}
+
+\begin{itemize}
+\item Animal tracking
+\begin{itemize}
+    \item deep learning
+    \item optical flow
+    \item deeplabcut
+    \item broilers
+    \item pathogens: campylobacter, flu, round worm
+    \item video data
+\end{itemize}
+\end{itemize}
