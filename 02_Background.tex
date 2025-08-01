@@ -1,0 +1,176 @@
+\section{Pandemic preparedness}
+
+In a similar vein to other emergencies, pandemic management can be systematically categorized into five distinct stages: prevention (or mitigation), preparedness, response, and recovery~\cite{alexander2002, coppola2006}. \emph{Pandemic prevention} and \textit{pandemic preparedness} are often defined interconnectedly as a set of measures to protect human populations through concerted national and international efforts~\cite{paho2024}. According to the \gls{who}, key measures for pandemic prevention and preparedness are clustered under five categories: emergency \textbf{c}oordination, \textbf{c}ollaborative surveillance, \textbf{c}ommunity protection, \textbf{c}linical care and access to \textbf{c}ountermeasures~\cite{who2023, paho2024, who2025}. 
+
+Recently, the One Health approach~\cite{onehealth2008} has become a cornerstone of pandemic preparedness framework like the \gls{who} Pandemic Agreement~\cite{who2025}. This holistic view emphasizes the importance of monitoring outbreaks from the environment as a whole, extending surveillance beyond human populations.
+
+The COVID-19 pandemic has highlighted the need for collecting large-scale datasets to better understand its dynamics~\cite{grenfell2004, attwood2022, silva2023, burki2024}. With that in mind, a number of approaches for digital collaborative surveillance have been proposed. The main approaches revolve around platforms for sharing data and toolkits for bioinformatic analysis such as GISAID~\cite{shu2017}, Nextstrain~\cite{hadfield2018}, and Freyja 2~\cite{levy2025}. Other research has highlighted the importance of \gls{ai} for epidemics~\cite{kraemer2025}, as well as a need to share models. The main data type of interest are pathogenic genomes to understand their dynamics using \emph{phylogenetics}~\cite{felsenstein1973} (see \ref{sec:bkg_phylo}). However, genomic data is only a piece of the pandemic preparedness puzzle. For instance, in light of the One Health framework, animal reservoir monitoring holds a lot of potential for preparedness. In this domain, large-scale sequencing is difficult: some reservoirs are geographically delicate and difficult to research, and would require a considerable amount of manpower which would be invasive to these ecosystems. Surfing on wildlife conservation strategies~\cite{tuia2022}, sensor-based technologies consitute a promising avenue~\cite{watsa2020, barroso2023}. More specifically, video imagery holds potential, using remote sensors (satellites, unmanned aerial vehices) to study herd dynamics or local camera systems to monitor individual behaviour, which in turn is used as a proxy for animal welfare~\cite{dawkins2003} (see \ref{sec:bkg_animal_welfare}).
+
+Consequently, modern preparedness is inherently data-heavy and multi-faceted, requiring interoperable frameworks for sharing datasets, AI models, and analytical toolkits. This integration of heterogenous data streams from DNA sequences to videos defines the next generation of pandemic resilience.
+
+% Wastewater surveillance, and a need to monitor susceptible animal reservoirs which may transmit zoonoses, as most of the past pandemics have been of zoonotic origin. Sequencing becomes difficult to scale when its wildlife or livestock, so other types of surveillance have been envisaged. Surfing on ecology, sensor-based technologies constitute a promising avenue~\cite{tuia2022}, most of it is based on video imagery either based on high-resolution remote sensors (satellites, unmanned aerial vehices), or camera systems (camera traps, closed-circuit television, consumer action cameras). This highlights the fact that modern pandemic preparedness is inherently data-heavy and multi-faceted, requiring various data science approaches to streamline the analysis of this data.
+
+
+% such as GISAID~\cite{shu2017}, sharing \gls{ai} models~\cite{kraemer2025}, as well as toolkits for bioinformatic analysis~\cite{hadfield2018, hufsky2021, levy2025}. 
+
+
+% An emerging body of research advocates the acceleration of distributed co Standardization ~
+
+
+% gisaid, flunet, nextstrain.
+
+
+% Key measures include vaccination programs, genomic surveillance, outbreak monitoring, as well as public health education. 
+
+
+
+% Pandemic \emph{preparedness} 
+
+% Like any emergency, the management of pandemics can be divided into five stages: prevention, preparedness, response, and recovery. Pandemic prevention encompass measures to protect human populations through national and international efforts. These include vaccination programs, surveillance and monitoring of outbreaks, public health education. Preparedness  involves planning + preparing equipment, procedures to ensure a swift and effective response: quarantine/isolation protocols, communication plans, training healthcare workers. Response = actions taken during the pandemic = lockdowns, closing schools, distributing supplies and vaccines, emergency operation centers. Recovery = reopening schools/businesses, mental health + séquelles support, economic recovery programs.
+
+% Definition, objectives. past pandemics, advent of sequencing in SARS-CoV-2. Coronaviruses. Current challenges.
+
+\section{A primer on phylogenetics}
+\label{sec:bkg_phylo}
+The overarching goal of phylogenetics is to study the evolutionary relationships between different entities (or \emph{taxa} in biology). It is thus a fundamental component of pandemic preparedness, as it contributes to our understanding of the origins, evolution, and dynamics of pathogens~\cite{eickmann2003, dudas2017, attwood2022}. Although the overwhelming majority of phylogenetic studies pertain to biological problems \cite{felsenstein2004, yang2014, stadler2024}, linguists also leverage phylogenetic techniques to study the evolution of languages~\cite{greenhill2023, heggarty2023}. The granularity of entities may range from the individual level (e.g., viral genomes sampled from a single host~\cite{weigang2021}) to any kind of taxonomic rank (e.g., species~\cite{mifsud2024}, families~\cite{stiller2024}). The central object of phylogenetics is the \emph{phylogenetic tree}, a hierarchical branching diagram depicting the evolutionary history of the observed entities. \textit{Phylogenetic networks} are a superset of phylogenetic trees that are notably useful when reticulate evolutionary processes such as horizontal gene transfer are in play~\cite{huson2006, stadler2024}.
+
+Phylogenetic trees are traditionally inferred by comparing data from observable entities of interest. Historically, this relied on qualitative comparisons of phenotypic characters such as morphology~\cite{dietrich1998}. However, technological advances in computer science and genetic sequencing~\cite{sanger1959, sanger1977} have ushered in a new era of objective, molecular data-driven phylogenetics~\cite{michener1957, zuckerkandl1965, fitch1967}.
+
+In this section, I provide a short primer on key phylogenetic concepts, with a note on protein structure-based phylogenetics, which may prove to be a useful complement to today's mainly sequence-based analyses.
+
+\subsection{Phylogenetic trees}
+
+From a computer science perspective, a phylogenetic tree (Figure~\ref{fig:basictree}) consists of a set of nodes connected by edges (also called \textit{branches}) which form an acyclic graph: any two nodes are connected by exactly 1 path. An edge always connects a \textit{child} or \textit{descendant} node to a \textit{parental} node; it can have a specific length (also called \textit{branch length}), which measures the amount of changes (or evolution) between the parent and its child. Nodes can be divided into two categories. First, \textit{leaf nodes} are said to be of degree-1 as they are connected to only 1 neighbour: their most recent ancestor. They do not have any chidlren/descendants. Non-leaf nodes are also called \textit{ancestral}, or \textit{internal nodes}: they have at least one descendant. Their placement is usually inferred from observable data (from the entities of interest; see later). From a biological perspective, \textit{leaf} nodes constitute the observed entities of interest, while \textit{ancestral} nodes constitute the \gls{mrca} of all tips that descend from it. They are not observable in the present.
+
+A tree is said to be \textit{labelled} if its leaf nodes are assigned to a specific entity. A tree with no information on labels and on branch lengths is called a \textit{topology}, as it only contains information on the connectedness between the different nodes.
+
+A tree is said to be \textit{rooted} if it satisfies the two following conditions: i) the edges are directed from parent to child, and ii) the tree includes a node, called the \textit{root}, which serves as the \gls{mrca} of all taxa of interest. A tree where edges are undirected (or bidirectional) and no root is called \textit{unrooted}.
+
+A rooted tree is said to be \textit{ultrametric} if the sum of the branch lengths from each leaf to the root is constant.
+
+A tree is said to be \textit{binary} or \textit{bifurcating} if each internal node is connected to exactly two children. In other words, leaves are of degree 1, and internal nodes of degree 3 (two children and one parent), except the root for rooted trees which is of degree 2 (only two children). It's the easiest (and most common) form of tree used in phylogenetics.
+
+More generally, a tree is said to be \textit{n-ary} if each internal node is connected to \textit{at most} $n$ children. Edge cases include $n = 0$ (a single point) and $n = 1$, a straight line. In phylogenetics, an internal node which has more than 2 children is called a \textit{polytomy}.
+
+A key challenge in phylogenetic inference is the vastness of tree space. For a problem set with $n$ taxa, there are $1\cdot3\cdot5\cdot\ldots\cdot (2n-5) \cdot (2n-3) = (2n-3)!!$ binary labelled trees~\cite{cavallisforza1967} ($!!$ denotes the \emph{semifactorial} operator). For $n$ = 5 taxa, there are 105 combinations; for $n$ = 53 taxa, this number exceeds estimates of the number of protons in the observable universe~\cite{eddington1946}. We thus have a need for efficient data structures to store and compare trees, and algorithms to sample trees and perform optimization operations.
+
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[thick, >=Stealth, scale=2]
+        % Nodes
+        \node[circle, fill=black, label=above:{}] (6) at (1.5, 2) {};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {};
+        \node[circle, fill=Peach] (5) at (1, 1.5) {};
+        \node[circle, fill=Mahogany] (0) at (0, -0.5) {A};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {B};
+        \node[circle, fill=Mahogany] (1) at (2, 0.5) {C};
+        \node[circle, fill=Mahogany] (3) at (4, -1) {D};
+
+        % Directed edges
+        \draw[->, gray] (6) -- (5);
+        \draw[->, gray] (5) -- (4);
+        \draw[->, gray] (6) -- (3) coordinate[midway] (branch1);
+        \draw[->, gray] (5) -- (1);
+        \draw[->, gray] (4) -- (0);
+        \draw[->, gray] (4) -- (2);
+
+        % Annotations
+        % Root node
+        \draw[->] (2.5, 2.5) node[right]{\textbf{Root node}} -- (6);
+
+        % Internal nodes
+        \draw[->, Peach] (-0.8,1.8) node[left]{\textbf{Internal nodes}} -- (5);
+        \draw[->, Peach] (-0.8,1.6) -- (4);
+
+        % Leaf nodes
+        \node[text=Mahogany] (leaflabel) at (0.5,-1.25) {\textbf{Leaf nodes}};
+        \draw[->, Mahogany] (leaflabel) -- (0);
+        \draw[->, Mahogany] (leaflabel) -- (2);
+
+        % Label
+        \node (clabel) at (2,-0.7) {\textbf{Label}};
+        \draw[->, dashed, black] (clabel) -- (1.center) + (0, -0.12);
+
+        % Branches
+        \draw[->, gray] (4,1.2) node[right]{\textbf{Branch}} -- (branch1);
+
+        % Scale legend
+        \draw[thick, gray] (-1, 2.5) -- ++(1, 0); % a 1-unit horizontal line
+        \node[text=gray] at (-0.5, 2.3) {1 substitution};
+    \end{tikzpicture}
+    \caption{A diagram of a binary, rooted, labelled, non-ultrametric, phylogenetic tree. The Newick representation of this tree is: (((A,B),C),D);.}
+    \label{fig:basictree}
+\end{figure}
+
+\subsection{Representing trees}
+
+In computer science, traditional ways to represent trees include linked lists or recursive classes, using a node class with attributes for data and references to its children~\cite{knuth1997}. Various methods have been proposed to compress a tree with $n$ leaves into a single-integer representation through counting methods~\cite{rotem1978, proskurowski1980, rohlf1983, palacios2022}. Although such methods allow for a compact representation of trees, they are generally impractical for real-world phylogenetic applications and lack human readability.
+
+In the 1990s, two tree representations were proposed for phylogenetic applications: pair matching~\cite{diaconis1998} and the so-called Newick format (Figure~\ref{fig:basictree})~\cite{olsen1990, felsenstein2004}, the latter of which has since become the \textit{de facto} standard in phylogenetic software. The Newick format represents trees as a set of nested parentheses which enclose pairs of subtrees or pairs of nodes. The main advantages of the Newick format lie in its simplicity and its flexibility, as it can support various annotations such as branch lengths and uncertainty measures. Whilst relatively human-readable for small trees, Newick strings become difficult to visually parse and compare for larger numbers of taxa. Importantly, the Newick format is not \emph{bijective} to the space of (binary) trees, as isomorphisms can be constructed by permuting the order of nodes or subtrees within a pair. In addition, sampling random trees using the Newick format is not intuitively achieved.
+
+A desirable final object to encode trees is a vector, i.e., a one-dimensional array structure. It is one of the most commonly used, flexible, and memory-efficient objects to collect data in many programming languages~\cite{stroustrup2013, harris2020, cormen2022}. A few vector-based representations have been proposed in previous research, including graph polynomials~\cite{liu2021, liu2022}, and the \gls{cblv}~\cite{voznica2022}. However, these formats have not been tailored for tree sampling or phylogenetic inference, as graph polynomials were designed tree clustering and phylogenetic model selection~\cite{liu2021, liu2022}, whereas the \gls{cblv} was implemented for deep learning-based inference of phylogenetic model parameters~\cite{voznica2022}.
+
+\subsection{Phylogenetic inference}
+\label{sec:bkg_phylo_inference}
+
+At its core, phylogenetic inference aims at estimating a (binary) phylogenetic tree $T$ for $n$ entities or taxa using comparable data. An intuitive procedure to infer such a tree is to calculate distances between the data at hand. For instance, a naive approach is to build a distance matrix of taxa by comparing the presence/absence of certain characters (or sequences) using a Hamming distance ($d(u,v) = \sum_i 1_{u_i \neq v_i}$). From this distance matrix, methods based on simple agglomerative clustering methods such as \gls{upgma}~\cite{sokal1958} or \gls{nj}~\cite{saitou1987, lefort2015} can be employed to infer a tree. %FastME~\cite{lefort2015} extends \gls{nj} with tree rearrangement operations based on \gls{nni} and \gls{spr} to optimize the \gls{bme} criterion (the best tree is the tree with the shortest total path length)~\cite{pauplin2000}.  \textcolor{red}{parsimony}. 
+However, the advent of molecular evolution~\cite{zuckerkandl1965, fitch1967} has propelled the development of new statistical frameworks for phylogenetic inference based on maximum likelihood~\cite{felsenstein1981}, which have become widely accepted as one of the state-of-the-art solutions for phylogenetic inference~\cite{guindon2003, kozlov2019, minh2020}. Central to these methods is Felsteins's likelihood algorithm~\cite{felsenstein1981}, an dynamic programming algorithm to calculate the likelihood of a phylogenetic tree given character data (e.g., nucleotide bases or amino acid residues). Importantly, it leaverages Markov models of substitution to compute the probabilities of changes in these (homologous) characters~\cite{duchene2024}. In DNA, notable substitution models are the naive Jukes-Cantor model~\cite{jukes1969}, which assumes that all substitutions occur with equal probability, and the \gls{gtr} model~\cite{tavare1986}, which allows each type of substitution to have its own rate and accounts for unequal base frequencies. For protein-based analyses, substitution models are often empirically derived from large alignments of homologous proteins. Examples include the WAG~\cite{whelan2001} and LG~\cite{le2008} models.
+
+% In DNA, substitutions are divided into transitions (interchanges of two bases of the same family: A$\leftrightarrow$G for purines, C$\leftrightarrow$T for pyrimidines) and transversions (exchanges between two bases of different families, e.g., A$\leftrightarrow$C). For DNA, the most naive model is the Jukes-Cantor model~\cite{jukes1969}, which assumes that all substitutions are equally likely to happen, e.g., p(A$\rightarrow$G) = p(A$\rightarrow$C) = p(A$\rightarrow$T) = 1/3. More sophisticated models make additional assumptions regarding evolutionary processes, with the \gls{gtr} model~\cite{tavare1986} being the most general. 
+% Using these substitution models, the likelihood of a phylogenetic tree can be calculated using Felsenstein's likelihood~\cite{felsenstein1973}, an efficient dynamic programming algorithm to calculate the probabilities of certain states using a post-order traversal. 
+Practically, maximum likelihood–based algorithms can be implemented by starting from a sensible initial tree (e.g., using \gls{nj}) and iteratively optimizing it through successive tree rearrangements. These can be very local, such as \gls{nni}, or more extensive, such as \gls{spr}, \gls{tbr}. Popular software for maximum likelihood-based phylogenetics include PhyML~\cite{guindon2003}, IQ-TREE~\cite{minh2020}, and RAxML-NG~\cite{kozlov2019}. Bayesian frameworks also operate with substitution models and Felsenstein's likelihood, but use MCMC: MrBayes~\cite{huelsenbeck2001} and BEAST~\cite{bouckaert2014, baele2025}. \textcolor{red}{Provide better explanation for Bayesian phylo}.
+
+% These methods rely on a likelihood function to be optimized, and Markov models of substitution, which allow to compute the probabilities of different substitutions (i.e., the replacement of a base by another)~\cite{jukes1969, tavare1986}. All modern phylogenetic ML software implement some version of Felsenstein's likelihood~\cite{felsenstein1973}, an efficient dynamic programming algorithm to calculate the probabilities of certain states (e.g, nucleotides or amino acids) using a post-order traversal. 
+
+% Using these substitution models, we can derive a recursive likelihood function for a binary tree. This is called Felsenstein's likelihood~\cite{felsenstein1973}. With these two attributes, we can implement maximum likelihood-based algorithms, starting from a sensible tree (e.g., from neighbour joining) and optimizing the tree by trying tree moves. These can be very local, such as \gls{nni}, or more general, such as \gls{spr}, \gls{tbr}. Popular software include IQ-TREE~\cite{minh2020} and RAxML-NG~\cite{kozlov2019}. Bayesian frameworks also operate with substitution models and Felsenstein's likelihood, but use MCMC: MrBayes~\cite{huelsenbeck2001} and BEAST~\cite{bouckaert2014, baele2025}. \textcolor{red}{Provide better explanation for Bayesian phylo}.
+
+\subsection{Structure-based phylogenetics}
+
+While genes contain genetic information, \emph{proteins} are the primary effectors of that information, acting as catalysts for most cell functions. They consist in one or more chains of amino acids \emph{folded} into a specific three-dimensional structure. The structure is largely pre-determined by the underlying chain of amino acids~\cite{anfinsen1973} and is crucial to the protein's function. From an evolutionary perspective, protein structures are posited to be more conserved~\cite{illergaard2009} than amino acid sequences (which are in turn inherently more conserved than nucleotide sequences due to codon degeneracy). In addition to thermodynamic constraints which sharply limit plausible conformations of a protein, empirical evidence from homologous proteins has shown that structure tends to reflect evolutionary constraints and functional similarities more reliably than raw DNA sequences~\cite{rost1999, illergaard2009, moi2022}. Nevertheless, comparing continuous, three-dimensional, protein structures for phylogenetic analysis is less obvious than discrete, linear sequences. Protein structures are spatial and physicochemical interactions, while sequences are simply linear arrangements of residues (nucleotides or amino acids) that can be directly aligned and compared. A substantial body of research has been dedicated to developing structure comparison metrics for distance-based phylogenetics, such as SSM~\cite{krissinel2004} or TM-Align~\cite{zhang2005}. More recently, the deep learning revolution~\cite{lecun2015} has propelled new avenues for structure-based phylogenetics. On the one hand, embeddings from \glspl{plm} (e.g., ESM~\cite{lin2023, hayes2025}, MSA Transformer~\cite{rao2021}) are shown to encode phylogenetic information~\cite{lupo2022, tule2025}. However, \glspl{plm} are currently of limited precision out of the box due to the coarseness of their training set~\cite{gomez2024}. This makes them impractical for pandemic-related phylogenetics, as analyses usually revolve around comparing variants which only differ by a few mutations~\cite{markov2023}. Another avenue consists in discretizing 3D structures into a finite set of characters, which could be then used downstream for maximum likelihood-based inference. A notable contribution is the \gls{vqvae} model developed within the Foldseek toolkit~\cite{vankempen2024}, whose encoder maps each residue in a strucure to one of 20 discrete characters using geometrical features (e.g., torsion angles between $C_\alpha$ atoms, distances) calculated with its nearest neighbour. Originally developed for protein structure search and clustering, the 3Di model has been used for phylogenetic analyses of diverse protein families (e.g., ferritins~\cite{puente2023}, RRNPPA quorum sensing receptors~\cite{moi2023}, and histones~\cite{fullmer2025}), but this model has, to the best of my knowledge, not yet been leveraged for pathogenic protein phylogenetics.
+
+% genomics, proteomics, phenomics
+
+% Ternary, quarternary structures.
+
+% Structures are posited to be more conserved than sequences~\cite{illergaard2009}. Homologous proteins are more likely to reflect evolutionary constraints and functional similarities than raw DNA sequences.
+
+% Comparing structures is naturally more difficult than sequences; it consists of one or more chains that are folded into complex 3D conformations influenced by spatial and physicochemical interactions, while sequences are simply linear arrangements of residues (nucleotides or amino acids) that can be directly aligned and compared.
+
+% For deep phylogenetics, this can be very cool as very divergent sequences can actually have very similar structures \textcolor{red}{citation needed}
+
+% Original methods for comparing protein structures were distance-based, using methods to "align" protein structures such as TM-align~\cite{zhang2005}. With the advent of new protein structure prediction models such as AlphaFold~\cite{jumper2021, gomez2024, abramson2024}, ColabFold~\cite{mirdita2022}, and ESM~\cite{lin2023, hayes2025}, it would be tempting to i) fold a whole bunch of proteins - this has created lots of large-scale protein atlases~\cite{varadi2022, lin2023, kim2025b} and ii) potentially compare embeddings from these models for downstream phylogenetic analysis. While it has been shown that these models do capture some signal~\cite{lupo2022, tule2025}, as of now these models are of limited precision out of the box when it comes to variants of a same species due to the coarseness of their training set~\cite{gomez2024}.
+
+% In parlallel, other have been made to discretize structures into a sequence of finite states to be able to perform similar maximum-likelihood based methods (see \nameref{sec:bkg_phylo_inference}). These exploit geometrical conformations of $C_\alpha$ atoms and/or their angles. The most popular is 3Di, a learnable discretizer based on a \gls{vqvae} trained on $\approx$ 10,000 protein sequences that maps geometrical angles and distances between $C_\alpha$ atoms to a discrete state. A burgeoning body of literature has worked on the 3di alphabet for various phylogenetic analyses~\cite{moi2023, puente2023}, but none have looked at the pandemic preparedness angle.
+
+% \item Structure-based phylogenetics
+% \begin{itemize}
+%     \item protein folding
+%     \item protein structures: ternary, quaternary etc
+%     \item domains
+%     \item protein structure prediction
+%     \item 3di
+% \end{itemize}
+
+\section{Animal welfare for pandemic preparedness}
+\label{sec:bkg_animal_welfare}
+
+Most recent pandemics have all been of zoonotic origin~\cite{vora2022}. Although getting increasingly cheaper and accessible, sequencing and protein folding remain poorly scalable when it comes to monitoring animal reservoirs. Something about farming and food security. Current flu epidemic. There is thus a strong demand for tools that could help monitor such reservoirs as well as livestock while minimizing contact with populations. The deep learning revolution~\cite{lecun2015} has catalysed the production of a plethora of methods for the estimation of pose in humans and animals as well as object tracking. This has become very popular in behavioral neuroscience, as these can help put actual numbers and measurements to behavioral experiments~\cite{mathis2018, graving2019, gunel2019, pereira2022, lauer2022}. The most popular is \gls{dlc}~\cite{mathis2018}, which has greatly contributed to making these methods accessible to scientists with little training in computer science. However, their potential for large-scale (i.e, lots of objects) experiments remains relatively unexplored. One interesting case is poultry farming: chickens can carry avian flu, are susceptible to be in contact with tons of wild birds, and they are a super important food source for humans.
+
+\subsection{Video surveillance}
+
+\subsection{Challenges}
+
+\begin{itemize}
+\item Animal tracking
+\begin{itemize}
+    \item deep learning
+    \item optical flow
+    \item deeplabcut
+    \item broilers
+    \item pathogens: campylobacter, flu, round worm
+    \item video data
+\end{itemize}
+\end{itemize}
+
+figure: illustration of optical flow
