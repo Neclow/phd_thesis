@@ -3,11 +3,18 @@
 \let\theglossary\relax
 \let\endtheglossary\relax
 \usepackage[english, sund, dropcaps, hyperref, submissionstatement]{ku-frontpage}
+
+% Fonts
 \usepackage[utf8]{inputenc}
-\usepackage[dvipsnames,rgb]{xcolor}
+\usepackage[dvipsnames,rgb,table]{xcolor}
 \usepackage[T1]{fontenc}
+\usepackage{amsfonts}
 \usepackage{amsmath}
+\usepackage{bm}
+\usepackage{soul}
 \usepackage{mathptmx}
+
+% Other
 \usepackage{enumitem}
 \usepackage{lipsum}
 \usepackage{pdfpages}
@@ -57,6 +64,7 @@
 
 \kupdfsetup{}{}{Neil Alexandre Scheidwasser}
 
+\renewcommand{\v}{$\boldsymbol{v}$}
 \renewcommand*\contentsname{Table of Contents}
 
 \usepackage[style=nature, autocite=superscript, natbib=true, uniquename=init]{biblatex}
@@ -120,6 +128,7 @@
 \begin{appendix}
 \addcontentsline{toc}{chapter}{Appendix}
 \chapter{Articles included in this thesis}
+\label{appendix:articles}
 \includepdf[pages=-]{papers/phylo2vec_sysbio.pdf}
 \includepdf[pages=-]{papers/phylo2vec_joss.pdf}
 \includepdf[pages=-]{papers/chicken_ecoli.pdf}

@@ -1,0 +1,79 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{tabular}{l l m{3cm} m{3.5cm} c}
+    & \v & Tree action & Pair action & Tree \\
+    Initial state & \v~= $\begin{pmatrix} 0 \end{pmatrix}$ & - & $\begin{pmatrix} 0, 1 \end{pmatrix}$ & \begin{tikzpicture}[thick, >=Stealth, scale=1]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (0.5, 2) {R};
+        \node[circle, fill=black, text=white] (2) at (0.5, 1) {2};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (1) at (1, 0) {1};
+
+        % Directed edges
+        \draw[->] (2) -- (R) node[midway, sloped, above] {2};
+        \draw[->] (2) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (2) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture} \\
+    Step 1: $v_1 = 0$ & \v~$ = \begin{pmatrix} 0 & 0 \end{pmatrix}$ & Add leaf $2$ from branch 0 & $0 \leq 1 \implies$ prepend $\begin{pmatrix} 0 & 2 \end{pmatrix}$ \newline $\begin{pmatrix} 0 & 2 \\ 0 & 1 \end{pmatrix} $
+    & \begin{tikzpicture}[thick, >=Stealth, scale=1]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (1, 3) {R};
+        \node[circle, fill=black, text=white] (4) at (1, 2) {4};
+        \node[circle, fill=Peach] (3) at (0.5, 1) {3};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+
+        % Directed edges
+        \draw[->] (R) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (4) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (4) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (3) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (3) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture} \\
+    Step 2: $v_2 = 4$ & \v~$ = \begin{pmatrix} 0 & 0 & 4 \end{pmatrix}$ & Add leaf $3$ from branch 4 & $4 \not\leq 2 \implies$ insert $3$ at position 4 (\v$_j$) - 2 (\texttt{len(\v)}) = 2 \newline sister = pairs[2 - 1][0] = 0 \newline $\begin{pmatrix} 0 & 2 \\ 0 & 1 \\ 0 & 3 \end{pmatrix}$ & \begin{tikzpicture}[thick, >=Stealth, scale=1]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {R};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {6};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {5};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {4};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2.5, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture} \\ \\
+    Step 3: $v_3 = 3$ & \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ & Add leaf $3$ from branch 4 & $3 \leq 3 \implies$ prepend $\begin{pmatrix} 3 & 4 \end{pmatrix}$ \newline $\begin{pmatrix} 3 & 4 \\ 0 & 2 \\ 0 & 1 \\ 0 & 3 \end{pmatrix}$ & \begin{tikzpicture}[thick, >=Stealth, scale=1]
+        % Nodes
+        \node[circle, fill=black, text=white] (8) at (2.5, 3) {8};
+        \node[circle, fill=Peach] (7) at (1.25, 2) {7};
+        \node[circle, fill=Peach] (6) at (0.5, 1) {6};
+        \node[circle, fill=Peach] (5) at (3.5, 1) {5};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (3, 0) {3};
+        \node[circle, fill=Mahogany] (4) at (4, 0) {4};
+
+        % Directed edges
+        \draw[->] (8) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (8) -- (7) node[midway, sloped, above] {7};
+        \draw[->] (7) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (7) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (6) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture} \\
+    \end{tabular}
+    \caption{Unrolling \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ as a tree.}
+    \label{fig:v2newick}
+\end{figure}

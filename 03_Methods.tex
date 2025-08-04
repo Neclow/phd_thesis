@@ -1,19 +1,369 @@
 \section{Study 1: Phylo2Vec}
+The overarching goal of \gls{p2v} (or Phylo2Vec)~\cite{penn2025, scheidwasser2025} is to encode phylogenetic tree topology into an integer-based vector format. Inspired by Yule processes~\cite{steel2001} and tree counting strategies~\cite{knuth1973, rotem1978, proskurowski1980, rohlf1983}, the core idea of the vector is to describe \emph{where} leaves are iteratively added to an existing tree topology. The construction of phylo2vec takes inspiration from the work of Rohlf~\cite{rohlf1983}, but differs in its edge labelling strategy and, most importantly, its preservation of the tree construction process as a vector. Beyond this conceptual shift, we contribute four key advances: (i) rigorous proofs of the bijectivity of the vector representation to the space of binary rooted trees~\cite{penn2025}, (ii) an extended matrix format to incorporate branch length information, (iii) empirical evidence of its potential utility for phylogenetic inference, and (iv) robust and open-source software for its utilisation for manipulating phylogenetic trees~\cite{scheidwasser2025}.
+
+The simple constraint of the phylo2vec formulation notably allows for rapid tree sampling, efficient compression, and trivial comparison of tree topologies. In addition, the simplicity of such a vector format makes it a convenient starting object for phylogenetic tree manipulation. This is showcased in a recent software package~\cite{scheidwasser2025}, which also highlights its potential for phylogenetic inference, including non-traditional optimization approaches such as GradME (gradient-based balanced minimum evolution)~\cite{penn2023}.
+
 \subsection{Definitions}
-Birth-death process.
-Setup: for a rooted tree with $n$ leaves, we assume that leaf nodes are labelled 0 to $n-1$ and internal nodes $n$ to $2(n-1)$. The root is always $2(n-1)$. The branches are also labelled according to their descendant (e.g., leaf branches are labelled according to their leaf, so the branch whose target is leaf $1$ is labelled as $1$).
-Goal: reduce a tree object into a vector which describes the order in which leaves are successively added to form the tree. We start with a 2-leaf tree with leaves $0$, $1$, and the vector will describe where to add the new leaves to form the tree.
-Ordered trees = binary trees where each leaf is successively added such that it forms a cherry with another leaf. The new leaf branches thus stem from another leaf branch. Subset of all trees: n!
-Phylo2Vec = ordered trees but allows for branches stemming from "internal branches". Bijective to tree space. Sketch of proof.
+\emph{Phylo2Vec} denotes a bijective mapping of phylogenetic tree topology into a constrained integer vector. It relies on the following assumptions on tree topology construction:
+
+\begin{itemize}
+    \item Let $n$ $T$ be a binary, rooted, phylogenetic tree with $n \geq 2$ leaves and topology $\tau$.
+    \item Each leaf is assigned a unique label $\ell \in \{0, \ldots, n-1\}$.
+    \item Each internal node is assigned a unique label $\ell' \in \{n-1, \ldots, 2(n-1)\}$. Their ordering generally depends on their height and descending leaves (see~\ref{methods:v2newick}). The root node is always labelled $2(n-1)$.
+    \item Each branch (or edge) is labelled according to their target node (i.e., a branch leading to node $\nu$ is labelled $\nu$).
+\end{itemize}
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[thick, >=Stealth, scale=2]
+        % Nodes
+        \node[circle, fill=black, text=white] (8) at (2.5, 3) {8};
+        \node[circle, fill=Peach] (7) at (1.25, 2) {7};
+        \node[circle, fill=Peach] (6) at (0.5, 1) {6};
+        \node[circle, fill=Peach] (5) at (3.5, 1) {5};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (3, 0) {3};f
+        \node[circle, fill=Mahogany] (4) at (4, 0) {4};
+
+        % Directed edges
+        \draw[->] (8) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (8) -- (7) node[midway, sloped, above] {7};
+        \draw[->] (7) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (7) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (6) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}
+    \caption{A diagram of a tree topology satisfying the assumptions for phylo2vec. The vector representation of this tree is $\begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ (see~\ref{methods:v2newick}).}
+    \label{fig:p2vtree}
+\end{figure}
+
+Figure~\ref{fig:p2vtree} depicts an example tree which satisfies these assumptions. Consequently, for any $n$-leaf tree topology, we define an integer vector representation $\boldsymbol{v}$ of length $n-1$:
+
+\begin{equation}
+    \forall n \geq 2 \quad \forall j \in \{0, \ldots, n-2\} \quad v_j \in \{0, \ldots, 2j\}
+    \label{eq:p2v}
+\end{equation}
+
+In this formulation, $v_j$ denotes the \emph{edge} from which leaf $j + 1$ descends when added to a tree with $j$ leaves. An immediate property that arises from Eq.~\ref{eq:p2v} is that the set of phylo2vec vectors has the same cardinality as the set of binary rooted trees~\cite{cavallisforza1967}. Noting $\mathbb{V}_n$ and $\mathbb{T}_n$ as, respectively, the set of vectors and binary trees with $n$ leaves:
+
+\begin{equation}
+    |\mathbb{V}_n| = \prod_{j=0}^{n-2}(2j+1) = 1\cdot3\cdot\ldots\cdot2n-3=(2n-3)!! = |\mathbb{T}_n|
+    \label{eq:p2v_cardinality}
+\end{equation}
+
+Given Eq.~\ref{eq:p2v_cardinality}, showing that there exists an injection from $\mathbb{V}_n$ to $\mathbb{T}_n$ for any $n \geq 2$ is sufficient to demonstrate bijectivity between both sets. A proof is provided in Penn \textit{et al.}~\cite{penn2025} (see~\ref{appendix:articles}).
+
+A Phylo2Vec vector is said to be \textit{ordered} if it satisfies:
+
+\begin{equation}
+    \forall n \geq 2 \quad \forall j \in \{0, \ldots, n-2\} \quad v_j \in \{0, \ldots, j\}  
+    \label{eq:p2v_ordered}
+\end{equation}
+
+The term \textit{ordered} refers to the fact that any leaf $i$ will, in a similar vein to Yule processes, rises from an ``older" leaf $j < i$. The cardinality of ordered trees is $\prod_{j=0}^{n-2}(j+1) = (n-1)!$. Whilst a (small) subset of all phylo2vec vectors, ordered trees are more algorithmically efficient to manipulate (see~\ref{methods:v2newick} and~\ref{methods:newick2v}) and more practical some for downstream phylogenetic applications~\cite{penn2023, penn2025}. Importantly, the \emph{Queue Shuffle} trick (see \textcolor{red}{section})~\cite{penn2023} enables the transformation of any \emph{unordered} vector $\boldsymbol{v}$ into an ordered one.
+
+% \textit{Ordered} trees form a subset of all trees: for $n$ leaves, there are $1 \cdot 3 \cdot \ldots \cdot n = n!$ possible vectors, but are more algorithmically efficient to manipulate (see~\ref{methods:v2newick} and~\ref{methods:newick2v}) and potentially more practical for downstream phylogenetic applications~\cite{penn2023, penn2025}. The \emph{Queue Shuffle} trick (see \textcolor{red}{section})~\cite{penn2023} enables the transformation of any \emph{unordered} vector $\boldsymbol{v}$ into an ordered variant.
+
+
+% Setup: for a rooted tree with $n$ leaves, we assume that leaf nodes are labelled 0 to $n-1$ and internal nodes $n$ to $2(n-1)$. The root is always $2(n-1)$. The branches are also labelled according to their descendant (e.g., leaf branches are labelled according to their leaf, so the branch whose target is leaf $1$ is labelled as $1$).
+% Goal: reduce a tree object into a vector which describes the order in which leaves are successively added to form the tree. We start with a 2-leaf tree with leaves $0$, $1$, and the vector will describe where to add the new leaves to form the tree.
+% Ordered trees = binary trees where each leaf is successively added such that it forms a cherry with another leaf. The new leaf branches thus stem from another leaf branch. Subset of all trees: n!
+% Phylo2Vec = ordered trees but allows for branches stemming from "internal branches". Bijective to tree space. Sketch of proof.
+
 \subsection{Unrolling a vector to a tree}
-Unrolling a vector to a tree occurs in several steps. First, we form a list of "pairs", a 2-tuple where the first element is a numbered branch, and the second element is the leaf to be added. To fill the list, we devised the following algorithm: \textcolor{red}{algorithm}. A naive implementation using insert operations for "unordered" nodes and append operations for "ordered" nodes has a best-case complexity of O(n) (all append), average complexity of O(n$^1.5$), and worse-case complexity of O(n$^2$) (all insert). An optimized implementation makes use of Adelson-Velsky and Landis trees (AVL), where insert operation are O(log n), thus result in an O(n log n) best, average, and worst-case complexity.
+\label{methods:v2newick}
+
+\begin{figure}[htbp]
+    \centering
+    \small
+    \begin{tabular}{p{2cm} l p{2cm} c c}
+    \toprule
+    & \v & \textsb{Tree action} & \textsb{Tree action (illustrated)} & \textsb{Tree} \\
+    \midrule
+    Initial state & \v~= $\begin{pmatrix} 0 \end{pmatrix}$ & - & - & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (0.5, 2) {R};
+        \node[circle, fill=black, text=white] (2) at (0.5, 1) {2};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (1) at (1, 0) {1};
+
+        % Directed edges
+        \draw[->] (2) -- (R) node[midway, sloped, above] {2};
+        \draw[->] (2) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (2) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture}} \\
+    Step 1: $v_1 = 0$ \newline Next leaf: 2 & \v~$ = \begin{pmatrix} 0 & 0 \end{pmatrix}$ & Add leaf $2$ from branch 0
+    & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (1, 3) {};
+        \node[circle, fill=black, text=white] (2) at (1, 2) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, draw=Mahogany] (2leaf) at (1, 0) {2};
+
+        \node (M) at (0.5, 1) {};
+
+        % Directed edges
+        \draw[->] (2) -- (R) node[midway, sloped, above] {};
+        \draw[->] (2) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (2) -- (0) node[midway, sloped, above] {0};
+        \draw[->, dashed, text=Mahogany, Mahogany] (M) -- (2leaf) node[midway, sloped, above] {};
+    \end{tikzpicture}}
+    & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (1, 3) {R};
+        \node[circle, fill=black, text=white] (4) at (1, 2) {4};
+        \node[circle, fill=Peach] (3) at (0.5, 1) {3};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+
+        % Directed edges
+        \draw[->] (R) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (4) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (4) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (3) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (3) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture}} \\
+    Step 2: $v_2 = 4$ \newline Next leaf: 3 & \v~$ = \begin{pmatrix} 0 & 0 & 4 \end{pmatrix}$ & Add leaf $3$ from branch 4 & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (1, 4) {};
+        \node[circle, fill=black, text=white] (4) at (1, 2.5) {};
+        \node[circle, fill=Peach] (3) at (0.5, 1) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3leaf) at (3, 0) {3};
+
+        \node (M) at (1, 3.25) {};
+
+        % Directed edges
+        \draw[->] (R) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (4) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (4) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (3) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (3) -- (0) node[midway, sloped, above] {0};
+        \draw[->, dashed, Mahogany] (M) -- (3leaf) node[midway, sloped, above] {};
+    \end{tikzpicture}} & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {R};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {6};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {5};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {4};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2.5, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture}} \\
+    Step 3: $v_3 = 3$ \newline Next leaf: 4 & \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ & Add leaf 4 from branch 3 \newline Remove the extra root (last step) & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, fill=Mahogany] (4leaf) at (3, 0) {4};
+
+        \node (M) at (3.25, 1.5) {};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+        \draw[->, dashed, Mahogany] (M) -- (4leaf) node[midway, sloped, above] {};
+    \end{tikzpicture}} & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (8) at (2.5, 3) {8};
+        \node[circle, fill=Peach] (7) at (1.25, 2) {7};
+        \node[circle, fill=Peach] (6) at (0.5, 1) {6};
+        \node[circle, fill=Peach] (5) at (3.5, 1.5) {5};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, fill=Mahogany] (4) at (3, 0) {4};
+
+        % Directed edges
+        \draw[->] (8) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (8) -- (7) node[midway, sloped, above] {7};
+        \draw[->] (7) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (7) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (6) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}} \\
+    \bottomrule
+    \end{tabular}
+    \caption{Unrolling \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ graphically as a tree. Adapted from Penn \textit{et al.}~\cite{penn2025}.}
+    \label{fig:v2newick}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \small
+    \begin{tabular}{p{4cm} p{4cm} c}
+    \toprule
+    \textsb{State} & \textsb{Action} & \textsb{Tree} \\
+    \midrule
+    Initial state & Added leaf 4 from branch 3 \newline Discard current internal node label \& branches  & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, fill=Mahogany] (4leaf) at (3, 0) {4};
+
+        \node[circle, fill=Peach] (M) at (3.25, 1.5) {};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {\st{6}};
+        \draw[->] (6) -- (3) node[midway, sloped, above] {\st{3}};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {\st{5}};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {\st{4}};
+        \draw[->, text=Mahogany] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->, text=Mahogany] (4) -- (2) node[midway, sloped, above] {2};
+        \draw[->, text=Mahogany] (4) -- (0) node[midway, sloped, above] {0};
+        \draw[->, dashed, Mahogany, text=Mahogany] (M) -- (4leaf) node[midway, sloped, above] {4};
+        \draw[text=Mahogany] (M) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}} \\
+    2 cherries: (0,2), (3,4) \newline Next parent = 5 & $\max(0, 2, 3, 4) = 4$ \newline Label the parent of 4 as 5 \newline Prune leaf \textsb{4} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
+
+        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {};
+        \draw[->] (6) -- (M) node[midway, sloped, above] {5};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {};
+        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (M) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}} \\
+    1 cherry: (0,2) \newline Next parent = 6 & $\max(0, 2) = 2$ \newline Label the parent of 2 as 6 \newline Prune leaf \textsb{2} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {6};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, draw=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
+
+        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {};
+        \draw[->] (6) -- (M) node[midway, sloped, above] {5};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {6};
+        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (M) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}} \\
+    1 cherry: (0,1) \newline Next parent = 7 & $\max(0, 1) = 1$ \newline Label the parent of 1 as 7 \newline Prune leaf \textsb{1} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {7};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {6};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, draw=Mahogany] (2) at (1, 0) {2};
+        \node[circle, draw=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
+
+        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {};
+        \draw[->] (6) -- (M) node[midway, sloped, above] {5};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {7};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {6};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (M) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}} \\
+    1 cherry: (0,3) \newline Next parent = 8 & $\max(0, 3) = 3$ \newline Label the parent of 1 as 8 \newline Prune leaf \textsb{3} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {8};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {7};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {6};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, draw=Mahogany] (2) at (1, 0) {2};
+        \node[circle, draw=Mahogany] (1) at (2, 0) {1};
+        \node[circle, draw=Mahogany] (3) at (4, 0) {3};
+        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
+
+        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {};
+        % \draw[->] (6) -- (M) node[midway, sloped, above] {5};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {7};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {6};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+        % \draw[->] (M) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}} \\
+    \bottomrule
+    \end{tabular}
+    \caption{A visual algorithm for re-labelling internal nodes after adding a new leaf. Example with Step 3 of Fig.~\ref{fig:v2newick} for \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$. Adapted from Penn \textit{et al.}~\cite{penn2025}.}
+    \label{fig:placeholder}
+\end{figure}
+
+
+Unrolling a vector to a tree occurs in several steps (see Figure~\ref{fig:v2newick} for a full illustration). First, we form a list of "pairs", a 2-tuple where the first element is a numbered branch, and the second element is the leaf to be added. To fill the list, we devised the following algorithm: \textcolor{red}{algorithm}. A naive implementation using insert operations for "unordered" nodes and append operations for "ordered" nodes has a best-case complexity of O(n) (all append), average complexity of O(n$^{1.5}$), and worse-case complexity of O(n$^2$) (all insert). An optimized implementation makes use of Adelson-Velsky and Landis trees (AVL), where insert operation are O(log n), thus result in an O(n log n) best, average, and worst-case complexity.
 
 From this list of pairs, we build a second intermediary object called an "ancestry" matrix, which consists in a list of cherries, described in (child1, child2, parent) triplets. From there, we can build a Newick string by iteratively merging Newick substrings fro the ancestry matrix. The ancestry matrix can be viewed as some sort of post-order traversal, and shares similarities with the "operations" object in BEAGLE.
+
+
 
 \textcolor{red}{Figure: a = vector to list of pairs, b = list of pairs to ancestry, c = ancestry to Newick}
 
 \subsection{Compressing a Newick tree to a vector}
-
+\label{methods:newick2v}
 Parse Newick from left to right to form an ancestry $\rightarrow$ re-order the ancestry: this is intuitive when parent nodes are provided. Without parent annotations, \textcolor{red}{describe algorithm}. The implementation is O(n log n) due to the use of Fenwick trees, a stucture to store prefix sums, to build the vector.
 
 \subsection{Phylo2Mat}

@@ -1,0 +1,104 @@
+
+% Wastewater surveillance, and a need to monitor susceptible animal reservoirs which may transmit zoonoses, as most of the past pandemics have been of zoonotic origin. Sequencing becomes difficult to scale when its wildlife or livestock, so other types of surveillance have been envisaged. Surfing on ecology, sensor-based technologies constitute a promising avenue~\cite{tuia2022}, most of it is based on video imagery either based on high-resolution remote sensors (satellites, unmanned aerial vehices), or camera systems (camera traps, closed-circuit television, consumer action cameras). This highlights the fact that modern pandemic preparedness is inherently data-heavy and multi-faceted, requiring various data science approaches to streamline the analysis of this data.
+
+
+% such as GISAID~\cite{shu2017}, sharing \gls{ai} models~\cite{kraemer2025}, as well as toolkits for bioinformatic analysis~\cite{hadfield2018, hufsky2021, levy2025}. 
+
+
+% An emerging body of research advocates the acceleration of distributed co Standardization ~
+
+
+% gisaid, flunet, nextstrain.
+
+
+% Key measures include vaccination programs, genomic surveillance, outbreak monitoring, as well as public health education. 
+
+
+
+% Pandemic \emph{preparedness} 
+
+% Like any emergency, the management of pandemics can be divided into five stages: prevention, preparedness, response, and recovery. Pandemic prevention encompass measures to protect human populations through national and international efforts. These include vaccination programs, surveillance and monitoring of outbreaks, public health education. Preparedness  involves planning + preparing equipment, procedures to ensure a swift and effective response: quarantine/isolation protocols, communication plans, training healthcare workers. Response = actions taken during the pandemic = lockdowns, closing schools, distributing supplies and vaccines, emergency operation centres. Recovery = reopening schools/businesses, mental health + séquelles support, economic recovery programs.
+
+% Definition, objectives. past pandemics, advent of sequencing in SARS-CoV-2. Coronaviruses. Current challenges.
+
+
+% In DNA, substitutions are divided into transitions (interchanges of two bases of the same family: A$\leftrightarrow$G for purines, C$\leftrightarrow$T for pyrimidines) and transversions (exchanges between two bases of different families, e.g., A$\leftrightarrow$C). For DNA, the most naive model is the Jukes-Cantor model~\cite{jukes1969}, which assumes that all substitutions are equally likely to happen, e.g., p(A$\rightarrow$G) = p(A$\rightarrow$C) = p(A$\rightarrow$T) = 1/3. More sophisticated models make additional assumptions regarding evolutionary processes, with the \gls{gtr} model~\cite{tavare1986} being the most general. 
+% Using these substitution models, the likelihood of a phylogenetic tree can be calculated using Felsenstein's likelihood~\cite{felsenstein1973}, an efficient dynamic programming algorithm to calculate the probabilities of certain states using a post-order traversal.
+
+
+% genomics, proteomics, phenomics
+
+% Ternary, quarternary structures.
+
+% Structures are posited to be more conserved than sequences~\cite{illergaard2009}. Homologous proteins are more likely to reflect evolutionary constraints and functional similarities than raw DNA sequences.
+
+% Comparing structures is naturally more difficult than sequences; it consists of one or more chains that are folded into complex 3D conformations influenced by spatial and physicochemical interactions, while sequences are simply linear arrangements of residues (nucleotides or amino acids) that can be directly aligned and compared.
+
+% For deep phylogenetics, this can be very cool as very divergent sequences can actually have very similar structures \textcolor{red}{citation needed}
+
+% Original methods for comparing protein structures were distance-based, using methods to "align" protein structures such as TM-align~\cite{zhang2005}. With the advent of new protein structure prediction models such as AlphaFold~\cite{jumper2021, gomez2024, abramson2024}, ColabFold~\cite{mirdita2022}, and ESM~\cite{lin2023, hayes2025}, it would be tempting to i) fold a whole bunch of proteins - this has created lots of large-scale protein atlases~\cite{varadi2022, lin2023, kim2025b} and ii) potentially compare embeddings from these models for downstream phylogenetic analysis. While it has been shown that these models do capture some signal~\cite{lupo2022, tule2025}, as of now these models are of limited precision out of the box when it comes to variants of a same species due to the coarseness of their training set~\cite{gomez2024}.
+
+% In parlallel, other have been made to discretize structures into a sequence of finite states to be able to perform similar maximum-likelihood based methods (see \nameref{sec:bkg_phylo_inference}). These exploit geometrical conformations of $C_\alpha$ atoms and/or their angles. The most popular is 3Di, a learnable discretizer based on a \gls{vqvae} trained on $\approx$ 10,000 protein sequences that maps geometrical angles and distances between $C_\alpha$ atoms to a discrete state. A burgeoning body of literature has worked on the 3di alphabet for various phylogenetic analyses~\cite{moi2023, puente2023}, but none have looked at the pandemic preparedness angle.
+
+% \item Structure-based phylogenetics
+% \begin{itemize}
+%     \item protein folding
+%     \item protein structures: ternary, quaternary etc
+%     \item domains
+%     \item protein structure prediction
+%     \item 3di
+% \end{itemize}
+
+%FastME~\cite{lefort2015} extends \gls{nj} with tree rearrangement operations based on \gls{nni} and \gls{spr} to optimize the \gls{bme} criterion (the best tree is the tree with the shortest total path length)~\cite{pauplin2000}.  \textcolor{red}{parsimony}. 
+
+
+% These methods rely on a likelihood function to be optimized, and Markov models of substitution, which allow to compute the probabilities of different substitutions (i.e., the replacement of a base by another)~\cite{jukes1969, tavare1986}. All modern phylogenetic ML software implement some version of Felsenstein's likelihood~\cite{felsenstein1973}, an efficient dynamic programming algorithm to calculate the probabilities of certain states (e.g, nucleotides or amino acids) using a post-order traversal. 
+
+% Using these substitution models, we can derive a recursive likelihood function for a binary tree. This is called Felsenstein's likelihood~\cite{felsenstein1973}. With these two attributes, we can implement maximum likelihood-based algorithms, starting from a sensible tree (e.g., from neighbour joining) and optimizing the tree by trying tree moves. These can be very local, such as \gls{nni}, or more general, such as \gls{spr}, \gls{tbr}. Popular software include IQ-TREE~\cite{minh2020} and RAxML-NG~\cite{kozlov2019}. Bayesian frameworks also operate with substitution models and Felsenstein's likelihood, but use MCMC: MrBayes~\cite{huelsenbeck2001} and BEAST~\cite{bouckaert2014, baele2025}. \textcolor{red}{Provide better explanation for Bayesian phylo}.
+
+
+% while some studies have demonstrated proof-of-concept systems---for example, tracking 2--8 broilers in controlled settings~\cite{zhuang2019} or single-animal tracking in non-free-ranging conditions~\cite{doornweerd2021}---these approaches do not scale well to commercial flock sizes. Since our initial investigations in June 2023, several promising methods have been suggested~\cite{depuru2024,ehsan2024,yang2024}, yet these focus on behaviour or welfare monitoring and do not address early infection detection.
+
+% ~\cite{zhuang2019} = cool, but 2–8 broilers
+% ~\cite{doornweerd2021} = single-animal tracking of poultry, not free ranging.
+% After our initial research (June 2023) ~\cite{depuru2024, ehsan2024, yang2024} = cool, but no infection detection
+
+% However, their potential for large-cohort experiments, such as in poultry, remains relatively unexplored, as tracking becomes increasingly computationally intensive and challenging due to frequent occlusions~\cite{zhou2023,han2025}. While some studies have demonstrated proof-of-concept systems---for example, tracking 2--8 broilers in controlled settings~\cite{zhuang2019} or single-animal tracking in non-free-ranging conditions~\cite{doornweerd2021}---these approaches do not scale well to commercial flock sizes. Since our initial investigations in June 2023, many promising methods have been proposed~\cite{depuru2024,ehsan2024,yang2024}, yet these focus on behaviour or welfare monitoring and do not address early infection detection.
+
+
+
+% ~\cite{zhang2023} = muzzle images for IBK in cattle.
+% ~\cite{zhuang2019} = cool, but 2-8 broilers
+% ~\cite{doornweerd2021} = single-animal tracking of poultry, not free ranging.
+% After our initial research (june 2023) ~\cite{depuru2024, ehsan2024, yang2024} = cool, but no infection detection
+
+% data is rarely open source.
+
+
+% Recently, similar methods have been used for the early detection of infections in mammals (e.g., pigs, cattle), notably based on facial features of the individuals~\cite{rodriguez2020,zhang2023}. However, their potential for large-cohort experiments such as poultry remains relatively unexplored, as tracking becomes more computationally intensive and difficult due to occlusions~\cite{zhou2023, han2025}. Whereas 
+
+
+% In contrast, while similar approaches are being developed for poultry, such as tracking flock activity or detecting abnormal droppings, the application of deep learning--based tracking specifically for early infection detection in chickens remains limited \cite{liu2024chicken,alghamdi2023broiler}
+
+
+% in computer vision have enabled the early detection of infections in mammals using deep learning--based motion tracking, for instance in pigs and cattle, where changes in locomotion or facial features were identified prior to the appearance of clinical signs \cite{rodriguez2020asf,zhang2023ibk}. In contrast, while similar approaches are being developed for poultry, such as tracking flock activity or detecting abnormal droppings, the application of deep learning--based tracking specifically for early infection detection in chickens remains limited \cite{liu2024chicken,alghamdi2023broiler}.
+
+% Although highly pathogenic versions of avian influenza are rarer than low-pathogenic versions, viruses may spill over from wild flocks into poultry farms, and in rare cases to humans via direct contact.
+
+% One interesting case is poultry farming: chickens can carry avian flu, are susceptible to be in contact with tons of wild birds, and they are a super important food source for humans.
+
+% \subsection{Video surveillance}
+
+% \subsection{Challenges}
+
+% \begin{itemize}
+% \item Animal tracking
+% \begin{itemize}
+%     \item deep learning
+%     \item optical flow
+%     \item deeplabcut
+%     \item broilers
+%     \item pathogens: campylobacter, flu, round worm
+%     \item video data
+% \end{itemize}
+% \end{itemize}
