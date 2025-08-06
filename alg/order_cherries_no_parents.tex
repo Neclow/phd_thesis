@@ -1,0 +1,21 @@
+\begin{algorithm}[htbp]
+\begin{algorithmic}[1]
+\Require $\bm{a}$ \Comment{Ancestry derived from a Newick without parent labels}
+
+\Comment{$\bm{a}$ is of length $n-1$ with $n$ the number of leaves}
+\State visited \Comment{Visited labels}
+\State $\bm{\mu}$ \Comment{Sorting indices}
+\For{$j \gets 0$ \textbf{to} $n - 2$}
+    \State $c_m \gets \min(\bm{a}_j), c_M \gets \max(\bm{a}_j)$
+    \If{$c_m \in \text{visited}$} 
+        \State $\bm{\mu}_j \gets \min(\text{visited}_{c_m}, c_M)$ 
+    \Else
+        \State $\bm{\mu}_j \gets c_M$ 
+    \EndIf
+    \State visited$_{c_m} \gets \bm{\mu}_j$
+\EndFor
+\State \Return $\bm{\mu}$
+\end{algorithmic}
+\caption{Ancestry sorting without parent labels.}
+\label{alg:order_cherries}
+\end{algorithm}

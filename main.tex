@@ -13,11 +13,16 @@
 \usepackage{bm}
 \usepackage{soul}
 \usepackage{mathptmx}
+\usepackage{pifont}% http://ctan.org/pkg/pifont
+\newcommand{\cmark}{\ding{51}}%
+\newcommand{\xmark}{\ding{55}}%
 
-% Other
-\usepackage{enumitem}
-\usepackage{lipsum}
+% Adding pdfs
 \usepackage{pdfpages}
+
+% Algorithms
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 
 % Figures
 \usepackage[export]{adjustbox}
@@ -27,7 +32,7 @@
 
 % tikz
 \usepackage{tikz}
-\usetikzlibrary{arrows.meta, decorations.pathmorphing, decorations.pathreplacing, positioning, shapes.geometric}
+\usetikzlibrary{arrows.meta, calc, decorations.pathmorphing, decorations.pathreplacing, positioning, shapes.geometric}
 \tikzset{every picture/.style={/utils/exec={\sffamily}}}
 
 % Glossary
@@ -44,6 +49,19 @@
 \setulmarginsandblock{2.5cm}{2.5cm}{*}
 \OnehalfSpacing
 \checkandfixthelayout
+
+% Equations
+\expandafter\def\expandafter\normalsize\expandafter{%
+    \normalsize%
+    \setlength\abovedisplayskip{0pt}%
+    \setlength\belowdisplayskip{8pt}%
+    \setlength\abovedisplayshortskip{-8pt}%
+    \setlength\belowdisplayshortskip{2pt}%
+}
+
+% Other
+\usepackage{enumitem}
+\usepackage{lipsum}
 
 \assignment{PhD thesis}
 \frontpageauthor{Neil Alexandre Scheidwasser}
@@ -64,6 +82,12 @@
 
 \kupdfsetup{}{}{Neil Alexandre Scheidwasser}
 
+\newcommand{\Mahogany}[1]{\textcolor{Mahogany}{#1}}
+\newcommand{\RoyalBlue}[1]{\textcolor{RoyalBlue}{#1}}
+\newcommand{\rn}[2]{%% "rn": "remember node"
+    \tikz[remember picture,baseline=(#1.base)]\node [inner sep=0] (#1) {$#2$};%
+}
+\newcommand{\m}{$\boldsymbol{m}$}
 \renewcommand{\v}{$\boldsymbol{v}$}
 \renewcommand*\contentsname{Table of Contents}
 
@@ -72,6 +96,8 @@
 \renewcommand{\cite}{\autocite}
 
 %% ======= New commands =======
+% bigO
+\newcommand{\bigO}{\mathcal{O}}
 % Phylo2Vec vector
 \renewcommand{\v}{$\boldsymbol{v}$}
 % Semibold font
@@ -79,6 +105,7 @@
 \DeclareTextFontCommand{\textsb}{\sbseries}
 
 \begin{document}
+
 \begingroup
   \fontencoding{T1}\fontfamily{LinuxLibertineT-OsF}\selectfont
   \maketitle

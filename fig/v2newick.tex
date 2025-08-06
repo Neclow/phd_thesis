@@ -1,0 +1,148 @@
+\begin{figure}[htbp]
+    \centering
+    \small
+    \begin{tabular}{p{2cm} l p{2cm} c c}
+    \toprule
+    & \v & \textsb{Tree action} & \textsb{Tree action (illustrated)} & \textsb{Tree} \\
+    \midrule
+    Initial state & \v~= $\begin{pmatrix} 0 \end{pmatrix}$ & - & - & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (0.5, 2) {R};
+        \node[circle, fill=black, text=white] (2) at (0.5, 1) {2};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (1) at (1, 0) {1};
+
+        % Directed edges
+        \draw[->] (R) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (2) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (2) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture}} \\
+    Step 1: $v_1 = 0$ \newline Next leaf: 2 & \v~$ = \begin{pmatrix} 0 & 0 \end{pmatrix}$ & Add leaf $2$ from branch 0
+    & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (1, 3) {};
+        \node[circle, fill=black, text=white] (2) at (1, 2) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, draw=Mahogany] (2leaf) at (1, 0) {2};
+
+        \node (M) at (0.5, 1) {};
+
+        % Directed edges
+        \draw[->] (2) -- (R) node[midway, sloped, above] {};
+        \draw[->] (2) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (2) -- (0) node[midway, sloped, above] {0};
+        \draw[->, dashed, text=Mahogany, Mahogany] (M) -- (2leaf) node[midway, sloped, above] {};
+    \end{tikzpicture}}
+    & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (1, 3) {R};
+        \node[circle, fill=black, text=white] (4) at (1, 2) {4};
+        \node[circle, fill=Peach] (3) at (0.5, 1) {3};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+
+        % Directed edges
+        \draw[->] (R) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (4) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (4) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (3) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (3) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture}} \\
+    Step 2: $v_2 = 4$ \newline Next leaf: 3 & \v~$ = \begin{pmatrix} 0 & 0 & 4 \end{pmatrix}$ & Add leaf $3$ from branch 4 & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (1, 4) {};
+        \node[circle, fill=black, text=white] (4) at (1, 2.5) {};
+        \node[circle, fill=Peach] (3) at (0.5, 1) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3leaf) at (3, 0) {3};
+
+        \node (M) at (1, 3.25) {};
+
+        % Directed edges
+        \draw[->] (R) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (4) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (4) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (3) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (3) -- (0) node[midway, sloped, above] {0};
+        \draw[->, dashed, Mahogany] (M) -- (3leaf) node[midway, sloped, above] {};
+    \end{tikzpicture}} & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {R};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {6};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {5};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {4};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2.5, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+    \end{tikzpicture}} \\
+    Step 3: $v_3 = 3$ \newline Next leaf: 4 & \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ & Add leaf 4 from branch 3 \newline Remove the extra root (last step) & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
+        \node[circle, fill=Peach] (5) at (1.5, 2) {};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, fill=Mahogany] (4leaf) at (3, 0) {4};
+
+        \node (M) at (3.25, 1.5) {};
+
+        % Directed edges
+        \draw[->] (R) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (3) node[midway, sloped, above] {3};
+        \draw[->] (6) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
+        \draw[->, dashed, Mahogany] (M) -- (4leaf) node[midway, sloped, above] {};
+    \end{tikzpicture}} & 
+    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
+        % Nodes
+        \node (R) at (2.5, 4) {};
+        \node[circle, fill=black, text=white] (8) at (2.5, 3) {8};
+        \node[circle, fill=Peach] (7) at (1.25, 2) {7};
+        \node[circle, fill=Peach] (6) at (0.5, 1) {6};
+        \node[circle, fill=Peach] (5) at (3.5, 1.5) {5};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
+        \node[circle, fill=Mahogany] (4) at (3, 0) {4};
+
+        % Directed edges
+        \draw[->] (8) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (8) -- (7) node[midway, sloped, above] {7};
+        \draw[->] (7) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (7) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (6) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}} \\
+    \bottomrule
+    \end{tabular}
+    \caption{Unpacking \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ graphically as a tree. Adapted from Penn \textit{et al.}~\cite{penn2025}.}
+    \label{fig:v2newick}
+\end{figure}
+
+\clearpage

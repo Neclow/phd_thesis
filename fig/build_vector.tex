@@ -1,0 +1,160 @@
+\begin{figure}[htbp]
+    \centering
+    \setlength{\arraycolsep}{2pt}
+    \begin{tikzpicture}[
+        node distance=2cm,
+        block/.style={
+            minimum width=2cm,
+            align=center,
+            draw=none,
+            font=\small
+        },
+        >=Stealth,
+        scale=0.75, every node/.style={transform shape}
+    ]
+
+    % Define nodes for each step
+    \node (input) [block, below=1.6 cm of step2] {
+        $
+        \begin{aligned}
+        \bm{a} &= 
+        \begin{pmatrix}
+            \colorbox{Mahogany!10}{$3$} & \colorbox{Mahogany!10}{$4$} & \colorbox{Mahogany!10}{$4$} \\ 
+            0 & 2 & 2 \\ 
+            0 & 1 & 1 \\ 
+            0 & 3 & 3 
+        \end{pmatrix} \\
+        \bm{f} &= 
+        \begin{pmatrix}
+            0 & 0 & 0 & 0 & 0 \\
+        \end{pmatrix} \\
+        \bm{v} &= 
+        \begin{pmatrix}
+            0 & 0 & 0 & 0\\
+        \end{pmatrix}
+        \end{aligned}
+        $
+    };
+
+    \node (step1) [block, right=1.6 cm of input] {
+        $
+        \begin{aligned}
+        \bm{a} &= 
+        \begin{pmatrix}
+            3 & 4 & 4 \\ 
+            \colorbox{Mahogany!10}{$0$} & \colorbox{Mahogany!10}{$2$} & \colorbox{Mahogany!10}{$2$} \\ 
+            0 & 1 & 1 \\ 
+            0 & 3 & 3 
+        \end{pmatrix} \\
+        \bm{f} &= 
+        \begin{pmatrix}
+            0 & 0 & 0 & 0 & 1 \\
+        \end{pmatrix} \\
+        \bm{v} &= 
+        \begin{pmatrix}
+            0 & 0 & 0 & \Mahogany{3} \\
+        \end{pmatrix}
+        \end{aligned}
+        $
+    };
+
+    \node (step2) [block, right=1.6 cm of step1] {
+        $\begin{aligned}
+        \bm{a} &= 
+        \begin{pmatrix}
+            3 & 4 & 4 \\ 
+            0 & 2 & 2 \\ 
+            \colorbox{Mahogany!10}{$0$} & \colorbox{Mahogany!10}{$1$} & \colorbox{Mahogany!10}{$1$} \\ 
+            0 & 3 & 3 
+        \end{pmatrix} \\
+        \bm{f} &= 
+        \begin{pmatrix}
+            0 & 0 & 1 & 0 & 2 \\
+        \end{pmatrix} \\
+        \bm{v} &= 
+        \begin{pmatrix}
+            0 & \Mahogany{0} & 0 & 3 \\
+        \end{pmatrix}
+        \end{aligned}
+        $
+    };
+
+    \node (step3) [block, right=1.6 cm of step2] {
+        $
+        \begin{aligned}
+        \bm{a} &= 
+        \begin{pmatrix}
+            3 & 4 & 4 \\ 
+            0 & 2 & 2 \\ 
+            0 & 1 & 1 \\ 
+            \colorbox{Mahogany!10}{$0$} & \colorbox{Mahogany!10}{$3$} & \colorbox{Mahogany!10}{$3$}
+        \end{pmatrix} \\
+        \bm{f} &= 
+        \begin{pmatrix}
+            0 & 1 & 2 & 0 & 3 \\
+        \end{pmatrix} \\
+        \bm{v} &= 
+        \begin{pmatrix}
+            \Mahogany{0} & 0 & 0 & 3 \\
+        \end{pmatrix}
+        \end{aligned}
+        $
+    };
+
+    \node (step4) [block, right=2.1 cm of step3] {
+        $
+        \begin{aligned}
+        \bm{v} &= 
+        \begin{pmatrix}
+            0 & 0 & \Mahogany{4} & 3 \\
+        \end{pmatrix}
+        \end{aligned}
+        $
+    };
+
+    \draw[->] (input.east) to node[midway, above, align=center, font=\scriptsize] {
+    $
+    \begin{aligned}
+        \min              &= 3 \\
+        \max              &= 4 \\
+        \bm{f}_\Sigma(4-1) &= 0 \\
+        \bm{v}_{4-1}      &= 3
+    \end{aligned}
+    $
+    }  (step1.west);
+
+    \draw[->] (step1.east) to node[midway, above, align=center, font=\scriptsize] {
+        $\begin{aligned}
+        \min              &= 0 \\
+        \max              &= 2 \\
+        \bm{f}_\Sigma(2-1) &= 0 \\
+        \bm{v}_{2-1}      &= 0
+      \end{aligned}$
+    }  (step2.west);
+
+    \draw[->] (step2.east) to node[midway, above, align=center, font=\scriptsize] {
+        $
+        \begin{aligned}
+            \min            &= 0 \\
+            \max            &= 1 \\
+            \bm{f}_\Sigma(1-1) &= 0 \\
+            \bm{v}_{1-1}    &= 0
+        \end{aligned}
+        $
+      }  (step3.west);
+
+    \draw[->] (step3.east) to node[midway, above, align=center, font=\scriptsize] {
+        $
+        \begin{aligned}
+            \min &= 0 \\ 
+            \max &= 3 \\ 
+            \bm{f}_\Sigma(3-1) &= 2 \\ 
+            \bm{v}_{3-1} = 3 - 1 + 2 &= 4
+          \end{aligned}
+        $   
+      }  (step4.west);
+
+    \end{tikzpicture}
+    \caption{Building a vector from an ordered ancestry $\bm{a}$, using the output of Fig.~\ref{fig:ordercherries} as an example. $\bm{f}$ denotes the prefix sum data collected at each iteration in Algorithm~\ref{alg:buildvector}. The $-1$ in $\bm{f}$ and $\bm{v}$ are due to 0-indexing. For a given cherry $(c_m, c_M)$ at position $j$, $\bm{f}_\Sigma(c_M)$ is equivalent to the number of cherries $(c_1, c_2)$ at position $i < j$ such that $c_2 \leq c_M$. If $\bm{f}_\Sigma(c_M) = 0$, $(c_m, c_M)$ is an ``ordered" cherry. Thus, $c_M$ descends from $c_m$ and $\bm{v}_{c_M-1} = c_m$. Otherwise, $c_M$ descends from an internal branch. In this case, $\bm{v}_{c_M-1}$ is calculated as the number of leaves before $c_M$ is added (i.e., $c_M - 1$) + $\bm{f}_\Sigma(c_M)$: $\bm{v}_{c_M-1} = c_M - 1 + \bm{f}_\Sigma(c_M)$.}
+    \label{fig:build_vector}
+\end{figure}

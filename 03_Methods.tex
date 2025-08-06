@@ -1,381 +1,168 @@
 \section{Study 1: Phylo2Vec}
-The overarching goal of \gls{p2v} (or Phylo2Vec)~\cite{penn2025, scheidwasser2025} is to encode phylogenetic tree topology into an integer-based vector format. Inspired by Yule processes~\cite{steel2001} and tree counting strategies~\cite{knuth1973, rotem1978, proskurowski1980, rohlf1983}, the core idea of the vector is to describe \emph{where} leaves are iteratively added to an existing tree topology. The construction of phylo2vec takes inspiration from the work of Rohlf~\cite{rohlf1983}, but differs in its edge labelling strategy and, most importantly, its preservation of the tree construction process as a vector. Beyond this conceptual shift, we contribute four key advances: (i) rigorous proofs of the bijectivity of the vector representation to the space of binary rooted trees~\cite{penn2025}, (ii) an extended matrix format to incorporate branch length information, (iii) empirical evidence of its potential utility for phylogenetic inference, and (iv) robust and open-source software for its utilisation for manipulating phylogenetic trees~\cite{scheidwasser2025}.
+The overarching goal of \gls{p2v} (or Phylo2Vec)~\cite{penn2025, scheidwasser2025} is to encode phylogenetic tree topology as a vector of integers. Inspired by Yule processes~\cite{steel2001} and tree counting strategies~\cite{knuth1973, rotem1978, proskurowski1980, rohlf1983}, the core idea is to describe \emph{where} leaves are iteratively added within an existing tree topology. The construction of phylo2vec takes inspiration from the work of Rohlf~\cite{rohlf1983}, but differs in its edge‑labelling strategy and, most importantly, in preserving the tree construction process within the vector representation. Beyond this conceptual shift, our contributions are fourfold: (i) rigorous proofs of the bijectivity of the vector representation with respect to the space of binary rooted trees~\cite{penn2025}, (ii) an extended matrix format to incorporate branch length information, (iii) empirical evidence of its usability for phylogenetic inference, and (iv) robust and open-source software for manipulating phylogenetic trees using this representation~\cite{scheidwasser2025}.
 
-The simple constraint of the phylo2vec formulation notably allows for rapid tree sampling, efficient compression, and trivial comparison of tree topologies. In addition, the simplicity of such a vector format makes it a convenient starting object for phylogenetic tree manipulation. This is showcased in a recent software package~\cite{scheidwasser2025}, which also highlights its potential for phylogenetic inference, including non-traditional optimization approaches such as GradME (gradient-based balanced minimum evolution)~\cite{penn2023}.
+The simple constraint of the phylo2vec formulation notably allows for rapid tree sampling, efficient compression, and straightforward comparison of tree topologies. In addition, the simplicity of such a vector format makes it a convenient starting object for phylogenetic tree manipulation. This is showcased in a recent software package~\cite{scheidwasser2025}, which also highlights potential avenues for phylo2vec-based phylogenetic inference, including non-traditional optimization approaches such as GradME (gradient-based balanced minimum evolution)~\cite{penn2023}.
 
 \subsection{Definitions}
-\emph{Phylo2Vec} denotes a bijective mapping of phylogenetic tree topology into a constrained integer vector. It relies on the following assumptions on tree topology construction:
+\label{p2v:definitions}
+\emph{Phylo2Vec} denotes a bijective mapping from phylogenetic tree topologies to constrained integer vectors. It relies on the following assumptions on tree topology construction:
 
-\begin{itemize}
-    \item Let $n$ $T$ be a binary, rooted, phylogenetic tree with $n \geq 2$ leaves and topology $\tau$.
+\begin{itemize}[nosep]
+    \item Let $T$ be a binary, rooted, phylogenetic tree with $n \geq 2$ leaves and topology $\tau$.
     \item Each leaf is assigned a unique label $\ell \in \{0, \ldots, n-1\}$.
-    \item Each internal node is assigned a unique label $\ell' \in \{n-1, \ldots, 2(n-1)\}$. Their ordering generally depends on their height and descending leaves (see~\ref{methods:v2newick}). The root node is always labelled $2(n-1)$.
-    \item Each branch (or edge) is labelled according to their target node (i.e., a branch leading to node $\nu$ is labelled $\nu$).
+    \item Each internal node is assigned a unique label $\ell' \in \{n, \ldots, 2(n-1)\}$. The assignment generally depends on the node's height and descending leaves (see Section~\ref{methods:v2newick}). The root node is always labelled $2(n-1)$.
+    \item Each branch (or edge) is labelled according to its target node (i.e., a branch leading to node $\nu$ is labelled $\nu$).
 \end{itemize}
+\input{fig/p2vtree}
 
-\begin{figure}[htbp]
-    \centering
-    \begin{tikzpicture}[thick, >=Stealth, scale=2]
-        % Nodes
-        \node[circle, fill=black, text=white] (8) at (2.5, 3) {8};
-        \node[circle, fill=Peach] (7) at (1.25, 2) {7};
-        \node[circle, fill=Peach] (6) at (0.5, 1) {6};
-        \node[circle, fill=Peach] (5) at (3.5, 1) {5};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (3, 0) {3};f
-        \node[circle, fill=Mahogany] (4) at (4, 0) {4};
-
-        % Directed edges
-        \draw[->] (8) -- (5) node[midway, sloped, above] {5};
-        \draw[->] (8) -- (7) node[midway, sloped, above] {7};
-        \draw[->] (7) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (7) -- (6) node[midway, sloped, above] {6};
-        \draw[->] (6) -- (0) node[midway, sloped, above] {0};
-        \draw[->] (6) -- (2) node[midway, sloped, above] {2};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
-        \draw[->] (5) -- (3) node[midway, sloped, above] {3};
-    \end{tikzpicture}
-    \caption{A diagram of a tree topology satisfying the assumptions for phylo2vec. The vector representation of this tree is $\begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ (see~\ref{methods:v2newick}).}
-    \label{fig:p2vtree}
-\end{figure}
-
-Figure~\ref{fig:p2vtree} depicts an example tree which satisfies these assumptions. Consequently, for any $n$-leaf tree topology, we define an integer vector representation $\boldsymbol{v}$ of length $n-1$:
+Fig.~\ref{fig:p2vtree} depicts an example tree which satisfies these assumptions. Consequently, for any $n$-leaf tree topology, we define an integer vector $\boldsymbol{v}$ of length $n-1$:
 
 \begin{equation}
     \forall n \geq 2 \quad \forall j \in \{0, \ldots, n-2\} \quad v_j \in \{0, \ldots, 2j\}
     \label{eq:p2v}
 \end{equation}
 
-In this formulation, $v_j$ denotes the \emph{edge} from which leaf $j + 1$ descends when added to a tree with $j$ leaves. An immediate property that arises from Eq.~\ref{eq:p2v} is that the set of phylo2vec vectors has the same cardinality as the set of binary rooted trees~\cite{cavallisforza1967}. Noting $\mathbb{V}_n$ and $\mathbb{T}_n$ as, respectively, the set of vectors and binary trees with $n$ leaves:
+We call $\mathbb{V}$ the set of vectors that satisfies Eq.~\ref{eq:p2v}. In this formulation, \textsb{$v_j$ denotes the \emph{edge} from which leaf $j + 1$ descends from} (when added to a tree with $j$ leaves). An immediate property that arises from Eq.~\ref{eq:p2v} is that the cardinality of the phylo2vec vector set equals that of the set of binary rooted trees~\cite{cavallisforza1967}. Noting $\mathbb{V}_n$ and $\mathbb{T}_n$ as, respectively, the set of vectors and binary trees with $n$ leaves:
 
 \begin{equation}
     |\mathbb{V}_n| = \prod_{j=0}^{n-2}(2j+1) = 1\cdot3\cdot\ldots\cdot2n-3=(2n-3)!! = |\mathbb{T}_n|
     \label{eq:p2v_cardinality}
 \end{equation}
 
-Given Eq.~\ref{eq:p2v_cardinality}, showing that there exists an injection from $\mathbb{V}_n$ to $\mathbb{T}_n$ for any $n \geq 2$ is sufficient to demonstrate bijectivity between both sets. A proof is provided in Penn \textit{et al.}~\cite{penn2025} (see~\ref{appendix:articles}).
+Given Eq.~\ref{eq:p2v_cardinality}, showing that there exists an injection from $\mathbb{V}_n$ to $\mathbb{T}_n$ for any $n \geq 2$ is sufficient to demonstrate bijectivity between the two sets. A proof is provided in Penn \textit{et al.}~\cite{penn2025} (see~\ref{appendix:articles}).
 
-A Phylo2Vec vector is said to be \textit{ordered} if it satisfies:
+A phylo2vec vector is said to be \textit{ordered} if it satisfies:
 
 \begin{equation}
     \forall n \geq 2 \quad \forall j \in \{0, \ldots, n-2\} \quad v_j \in \{0, \ldots, j\}  
     \label{eq:p2v_ordered}
 \end{equation}
 
-The term \textit{ordered} refers to the fact that any leaf $i$ will, in a similar vein to Yule processes, rises from an ``older" leaf $j < i$. The cardinality of ordered trees is $\prod_{j=0}^{n-2}(j+1) = (n-1)!$. Whilst a (small) subset of all phylo2vec vectors, ordered trees are more algorithmically efficient to manipulate (see~\ref{methods:v2newick} and~\ref{methods:newick2v}) and more practical some for downstream phylogenetic applications~\cite{penn2023, penn2025}. Importantly, the \emph{Queue Shuffle} trick (see \textcolor{red}{section})~\cite{penn2023} enables the transformation of any \emph{unordered} vector $\boldsymbol{v}$ into an ordered one.
+The term \textit{ordered} refers to the fact that any leaf $i$ will, in a similar vein to Yule processes, descend from an ``older" leaf $j < i$. The cardinality of ordered trees is $\prod_{j=0}^{n-2}(j+1) = (n-1)!$. Whilst a subset of all phylo2vec vectors, ordered trees are more algorithmically efficient to manipulate (see Sections~\ref{methods:v2newick} and~\ref{methods:newick2v}) and more practical for certain downstream phylogenetic applications~\cite{penn2023, penn2025}. Importantly, the \emph{Queue Shuffle} trick~\cite{penn2023} enables the transformation of any \emph{unordered} vector $\boldsymbol{v}$ into an ordered one.
 
-% \textit{Ordered} trees form a subset of all trees: for $n$ leaves, there are $1 \cdot 3 \cdot \ldots \cdot n = n!$ possible vectors, but are more algorithmically efficient to manipulate (see~\ref{methods:v2newick} and~\ref{methods:newick2v}) and potentially more practical for downstream phylogenetic applications~\cite{penn2023, penn2025}. The \emph{Queue Shuffle} trick (see \textcolor{red}{section})~\cite{penn2023} enables the transformation of any \emph{unordered} vector $\boldsymbol{v}$ into an ordered variant.
+Conversely, a phylo2vec vector is said to be \textit{completely unordered} if:
 
+\begin{equation}
+    \forall n \geq 2 \quad \forall j \in \{0, \ldots, n-2\} \quad v_j \in \{j+1, \ldots, 2j\}  
+    \label{eq:p2v_completelyunordered}
+\end{equation}
 
-% Setup: for a rooted tree with $n$ leaves, we assume that leaf nodes are labelled 0 to $n-1$ and internal nodes $n$ to $2(n-1)$. The root is always $2(n-1)$. The branches are also labelled according to their descendant (e.g., leaf branches are labelled according to their leaf, so the branch whose target is leaf $1$ is labelled as $1$).
-% Goal: reduce a tree object into a vector which describes the order in which leaves are successively added to form the tree. We start with a 2-leaf tree with leaves $0$, $1$, and the vector will describe where to add the new leaves to form the tree.
-% Ordered trees = binary trees where each leaf is successively added such that it forms a cherry with another leaf. The new leaf branches thus stem from another leaf branch. Subset of all trees: n!
-% Phylo2Vec = ordered trees but allows for branches stemming from "internal branches". Bijective to tree space. Sketch of proof.
+In other words, whereas leaves from an ordered vector descend from leaf branches, leaves from a completely unordered vector attach to internal branches.
 
-\subsection{Unrolling a vector to a tree}
+\subsection{Unpacking a vector as a tree}
 \label{methods:v2newick}
 
-\begin{figure}[htbp]
-    \centering
-    \small
-    \begin{tabular}{p{2cm} l p{2cm} c c}
-    \toprule
-    & \v & \textsb{Tree action} & \textsb{Tree action (illustrated)} & \textsb{Tree} \\
-    \midrule
-    Initial state & \v~= $\begin{pmatrix} 0 \end{pmatrix}$ & - & - & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (0.5, 2) {R};
-        \node[circle, fill=black, text=white] (2) at (0.5, 1) {2};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (1) at (1, 0) {1};
+Unpacking a vector satisfying the phylo2vec conditions from Eq.~\ref{eq:p2v} is performed by reading the vector from left to right, adding one leaf per vector element. Fig.~\ref{fig:v2newick} shows a detailed example of the conversion process. We start from a two-leaf tree with leaves labelled $0$ and $1$, a root labelled $2$. Following the assumptions in Section~\ref{p2v:definitions}, we label each edge according to its target node. We also add an \emph{extra root} labelled $R$, for which we draw a directed edge from $R$ to $2$. Following the definition of $v_j$ (see Section~\ref{p2v:definitions}), this additional edge is necessary to ensure that all the possible $3$ leaf placements are represented from the starting tree (and, by induction, to ensure that all possible $2n-1$ leaf placements can be represented from a $n$-leaf tree~\cite{cavallisforza1967}). From this initial state, we successively add leaves according to the values of \v, where an iteration $j$ equates to adding leaf $j+1$ from branch $v_j$. Importantly, the addition of a new leaf requires updating the labels of the internal nodes and edges. The general update rule is that the next “internal node” to be labelled is the parent of the cherry with the highest label. An illustration of this rule is presented in Fig.~\ref{fig:relabelling}.
 
-        % Directed edges
-        \draw[->] (2) -- (R) node[midway, sloped, above] {2};
-        \draw[->] (2) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (2) -- (0) node[midway, sloped, above] {0};
-    \end{tikzpicture}} \\
-    Step 1: $v_1 = 0$ \newline Next leaf: 2 & \v~$ = \begin{pmatrix} 0 & 0 \end{pmatrix}$ & Add leaf $2$ from branch 0
-    & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (1, 3) {};
-        \node[circle, fill=black, text=white] (2) at (1, 2) {};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, draw=Mahogany] (2leaf) at (1, 0) {2};
+\input{fig/v2newick}
 
-        \node (M) at (0.5, 1) {};
+\input{fig/relabelling}
 
-        % Directed edges
-        \draw[->] (2) -- (R) node[midway, sloped, above] {};
-        \draw[->] (2) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (2) -- (0) node[midway, sloped, above] {0};
-        \draw[->, dashed, text=Mahogany, Mahogany] (M) -- (2leaf) node[midway, sloped, above] {};
-    \end{tikzpicture}}
-    & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (1, 3) {R};
-        \node[circle, fill=black, text=white] (4) at (1, 2) {4};
-        \node[circle, fill=Peach] (3) at (0.5, 1) {3};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+In practice, unpacking a vector in Newick format requires two steps in the current version of the \texttt{phylo2vec} package (v1.3.1)~\cite{scheidwasser2025}. First, we build a list of “cherries” which describe a post-order traversal of the tree (Algorithm~\ref{alg:to_pairs}; see Fig.~\ref{fig:to_pairs} for an example). For ordered vectors (see Eq.~\ref{eq:p2v_ordered}), the vector translates immediately into an ordered traversal, as new leaves are added from leaf branches (i.e., extant branches). For completely unordered vectors (see Eq.~\ref{eq:p2v_completelyunordered}), insert operations are needed to preserve the post-order nature of the cherry list, with the insert position depending on $v_j$ and $j$. From this list of cherries, we can form a Newick representation of the tree by iteratively merging Newick substrings initiated from the cherry list (see Fig.~\ref{fig:build_newick} for an example).
 
-        % Directed edges
-        \draw[->] (R) -- (4) node[midway, sloped, above] {4};
-        \draw[->] (4) -- (3) node[midway, sloped, above] {3};
-        \draw[->] (4) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (3) -- (2) node[midway, sloped, above] {2};
-        \draw[->] (3) -- (0) node[midway, sloped, above] {0};
-    \end{tikzpicture}} \\
-    Step 2: $v_2 = 4$ \newline Next leaf: 3 & \v~$ = \begin{pmatrix} 0 & 0 & 4 \end{pmatrix}$ & Add leaf $3$ from branch 4 & 
-    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (1, 4) {};
-        \node[circle, fill=black, text=white] (4) at (1, 2.5) {};
-        \node[circle, fill=Peach] (3) at (0.5, 1) {};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3leaf) at (3, 0) {3};
+\input{alg/to_pairs}
+\input{fig/to_pairs}
 
-        \node (M) at (1, 3.25) {};
+\input{fig/build_newick}
 
-        % Directed edges
-        \draw[->] (R) -- (4) node[midway, sloped, above] {4};
-        \draw[->] (4) -- (3) node[midway, sloped, above] {3};
-        \draw[->] (4) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (3) -- (2) node[midway, sloped, above] {2};
-        \draw[->] (3) -- (0) node[midway, sloped, above] {0};
-        \draw[->, dashed, Mahogany] (M) -- (3leaf) node[midway, sloped, above] {};
-    \end{tikzpicture}} & 
-    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {R};
-        \node[circle, fill=black, text=white] (6) at (2.5, 3) {6};
-        \node[circle, fill=Peach] (5) at (1.5, 2) {5};
-        \node[circle, fill=Peach] (4) at (0.5, 1) {4};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2.5, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
-
-        % Directed edges
-        \draw[->] (R) -- (6) node[midway, sloped, above] {6};
-        \draw[->] (6) -- (3) node[midway, sloped, above] {3};
-        \draw[->] (6) -- (5) node[midway, sloped, above] {5};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
-        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
-        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
-    \end{tikzpicture}} \\
-    Step 3: $v_3 = 3$ \newline Next leaf: 4 & \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ & Add leaf 4 from branch 3 \newline Remove the extra root (last step) & 
-    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
-        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
-        \node[circle, fill=Peach] (5) at (1.5, 2) {};
-        \node[circle, fill=Peach] (4) at (0.5, 1) {};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
-        \node[circle, fill=Mahogany] (4leaf) at (3, 0) {4};
-
-        \node (M) at (3.25, 1.5) {};
-
-        % Directed edges
-        \draw[->] (R) -- (6) node[midway, sloped, above] {6};
-        \draw[->] (6) -- (3) node[midway, sloped, above] {3};
-        \draw[->] (6) -- (5) node[midway, sloped, above] {5};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
-        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
-        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
-        \draw[->, dashed, Mahogany] (M) -- (4leaf) node[midway, sloped, above] {};
-    \end{tikzpicture}} & 
-    \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node (R) at (2.5, 4) {};
-        \node[circle, fill=black, text=white] (8) at (2.5, 3) {8};
-        \node[circle, fill=Peach] (7) at (1.25, 2) {7};
-        \node[circle, fill=Peach] (6) at (0.5, 1) {6};
-        \node[circle, fill=Peach] (5) at (3.5, 1.5) {5};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
-        \node[circle, fill=Mahogany] (4) at (3, 0) {4};
-
-        % Directed edges
-        \draw[->] (8) -- (5) node[midway, sloped, above] {5};
-        \draw[->] (8) -- (7) node[midway, sloped, above] {7};
-        \draw[->] (7) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (7) -- (6) node[midway, sloped, above] {6};
-        \draw[->] (6) -- (0) node[midway, sloped, above] {0};
-        \draw[->] (6) -- (2) node[midway, sloped, above] {2};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
-        \draw[->] (5) -- (3) node[midway, sloped, above] {3};
-    \end{tikzpicture}} \\
-    \bottomrule
-    \end{tabular}
-    \caption{Unrolling \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ graphically as a tree. Adapted from Penn \textit{et al.}~\cite{penn2025}.}
-    \label{fig:v2newick}
-\end{figure}
-
-\begin{figure}
-    \centering
-    \small
-    \begin{tabular}{p{4cm} p{4cm} c}
-    \toprule
-    \textsb{State} & \textsb{Action} & \textsb{Tree} \\
-    \midrule
-    Initial state & Added leaf 4 from branch 3 \newline Discard current internal node label \& branches  & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
-        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
-        \node[circle, fill=Peach] (5) at (1.5, 2) {};
-        \node[circle, fill=Peach] (4) at (0.5, 1) {};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
-        \node[circle, fill=Mahogany] (4leaf) at (3, 0) {4};
-
-        \node[circle, fill=Peach] (M) at (3.25, 1.5) {};
-
-        % Directed edges
-        \draw[->] (R) -- (6) node[midway, sloped, above] {\st{6}};
-        \draw[->] (6) -- (3) node[midway, sloped, above] {\st{3}};
-        \draw[->] (6) -- (5) node[midway, sloped, above] {\st{5}};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {\st{4}};
-        \draw[->, text=Mahogany] (5) -- (1) node[midway, sloped, above] {1};
-        \draw[->, text=Mahogany] (4) -- (2) node[midway, sloped, above] {2};
-        \draw[->, text=Mahogany] (4) -- (0) node[midway, sloped, above] {0};
-        \draw[->, dashed, Mahogany, text=Mahogany] (M) -- (4leaf) node[midway, sloped, above] {4};
-        \draw[text=Mahogany] (M) -- (3) node[midway, sloped, above] {3};
-    \end{tikzpicture}} \\
-    2 cherries: (0,2), (3,4) \newline Next parent = 5 & $\max(0, 2, 3, 4) = 4$ \newline Label the parent of 4 as 5 \newline Prune leaf \textsb{4} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
-        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
-        \node[circle, fill=Peach] (5) at (1.5, 2) {};
-        \node[circle, fill=Peach] (4) at (0.5, 1) {};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
-        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
-
-        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
-
-        % Directed edges
-        \draw[->] (R) -- (6) node[midway, sloped, above] {};
-        \draw[->] (6) -- (M) node[midway, sloped, above] {5};
-        \draw[->] (6) -- (5) node[midway, sloped, above] {};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {};
-        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (4) -- (2) node[midway, sloped, above] {2};
-        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
-        \draw[->] (M) -- (3) node[midway, sloped, above] {3};
-    \end{tikzpicture}} \\
-    1 cherry: (0,2) \newline Next parent = 6 & $\max(0, 2) = 2$ \newline Label the parent of 2 as 6 \newline Prune leaf \textsb{2} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
-        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
-        \node[circle, fill=Peach] (5) at (1.5, 2) {};
-        \node[circle, fill=Peach] (4) at (0.5, 1) {6};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, draw=Mahogany] (2) at (1, 0) {2};
-        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
-        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
-
-        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
-
-        % Directed edges
-        \draw[->] (R) -- (6) node[midway, sloped, above] {};
-        \draw[->] (6) -- (M) node[midway, sloped, above] {5};
-        \draw[->] (6) -- (5) node[midway, sloped, above] {};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {6};
-        \draw[->] (5) -- (1) node[midway, sloped, above] {1};
-        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
-        \draw[->] (M) -- (3) node[midway, sloped, above] {3};
-    \end{tikzpicture}} \\
-    1 cherry: (0,1) \newline Next parent = 7 & $\max(0, 1) = 1$ \newline Label the parent of 1 as 7 \newline Prune leaf \textsb{1} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
-        \node[circle, fill=black, text=white] (6) at (2.5, 3) {};
-        \node[circle, fill=Peach] (5) at (1.5, 2) {7};
-        \node[circle, fill=Peach] (4) at (0.5, 1) {6};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, draw=Mahogany] (2) at (1, 0) {2};
-        \node[circle, draw=Mahogany] (1) at (2, 0) {1};
-        \node[circle, fill=Mahogany] (3) at (4, 0) {3};
-        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
-
-        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
-
-        % Directed edges
-        \draw[->] (R) -- (6) node[midway, sloped, above] {};
-        \draw[->] (6) -- (M) node[midway, sloped, above] {5};
-        \draw[->] (6) -- (5) node[midway, sloped, above] {7};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {6};
-        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
-        \draw[->] (M) -- (3) node[midway, sloped, above] {3};
-    \end{tikzpicture}} \\
-    1 cherry: (0,3) \newline Next parent = 8 & $\max(0, 3) = 3$ \newline Label the parent of 1 as 8 \newline Prune leaf \textsb{3} & \adjustbox{valign=t}{\begin{tikzpicture}[thick, >=Stealth, scale=0.9, every node/.style={scale=0.9}]
-        % Nodes
-        \node[circle, fill=gray, text=white] (R) at (2.5, 4) {};
-        \node[circle, fill=black, text=white] (6) at (2.5, 3) {8};
-        \node[circle, fill=Peach] (5) at (1.5, 2) {7};
-        \node[circle, fill=Peach] (4) at (0.5, 1) {6};
-        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
-        \node[circle, draw=Mahogany] (2) at (1, 0) {2};
-        \node[circle, draw=Mahogany] (1) at (2, 0) {1};
-        \node[circle, draw=Mahogany] (3) at (4, 0) {3};
-        \node[circle, draw=Mahogany] (4leaf) at (3, 0) {4};
-
-        \node[circle, fill=Peach] (M) at (3.25, 1.5) {5};
-
-        % Directed edges
-        \draw[->] (R) -- (6) node[midway, sloped, above] {};
-        % \draw[->] (6) -- (M) node[midway, sloped, above] {5};
-        \draw[->] (6) -- (5) node[midway, sloped, above] {7};
-        \draw[->] (5) -- (4) node[midway, sloped, above] {6};
-        \draw[->] (4) -- (0) node[midway, sloped, above] {0};
-        % \draw[->] (M) -- (3) node[midway, sloped, above] {3};
-    \end{tikzpicture}} \\
-    \bottomrule
-    \end{tabular}
-    \caption{A visual algorithm for re-labelling internal nodes after adding a new leaf. Example with Step 3 of Fig.~\ref{fig:v2newick} for \v~$ = \begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$. Adapted from Penn \textit{et al.}~\cite{penn2025}.}
-    \label{fig:placeholder}
-\end{figure}
-
-
-Unrolling a vector to a tree occurs in several steps (see Figure~\ref{fig:v2newick} for a full illustration). First, we form a list of "pairs", a 2-tuple where the first element is a numbered branch, and the second element is the leaf to be added. To fill the list, we devised the following algorithm: \textcolor{red}{algorithm}. A naive implementation using insert operations for "unordered" nodes and append operations for "ordered" nodes has a best-case complexity of O(n) (all append), average complexity of O(n$^{1.5}$), and worse-case complexity of O(n$^2$) (all insert). An optimized implementation makes use of Adelson-Velsky and Landis trees (AVL), where insert operation are O(log n), thus result in an O(n log n) best, average, and worst-case complexity.
-
-From this list of pairs, we build a second intermediary object called an "ancestry" matrix, which consists in a list of cherries, described in (child1, child2, parent) triplets. From there, we can build a Newick string by iteratively merging Newick substrings fro the ancestry matrix. The ancestry matrix can be viewed as some sort of post-order traversal, and shares similarities with the "operations" object in BEAGLE.
-
-
-
-\textcolor{red}{Figure: a = vector to list of pairs, b = list of pairs to ancestry, c = ancestry to Newick}
-
-\subsection{Compressing a Newick tree to a vector}
+\subsection{Packing a Newick tree into a vector}
 \label{methods:newick2v}
-Parse Newick from left to right to form an ancestry $\rightarrow$ re-order the ancestry: this is intuitive when parent nodes are provided. Without parent annotations, \textcolor{red}{describe algorithm}. The implementation is O(n log n) due to the use of Fenwick trees, a stucture to store prefix sums, to build the vector.
 
-\subsection{Phylo2Mat}
-Phylo2Mat = Phylo2Vec with branch length annotations. \textcolor{red}{Add rule for how BLs are added}. Several extra rules had to be added to ensure bijectivity.
+Converting a Newick representation of a binary, rooted tree into a phylo2vec vector requires three steps. First, the Newick string is parsed from left to right, where substrings of the form $(c_1, c_2)p$ are successively converted into a list of triplets that we call \emph{ancestry}. Importantly, the Newick string need not to have explicit parental nodes for this conversion process to function, as similar algorithms can be derived without them~\cite{scheidwasser2025}. Fig.~\ref{fig:parse-snake} shows an example of this process for the Newick string obtained in Fig.~\ref{fig:build_newick}. 
+
+\input{fig/parse}
+
+As the obtained \emph{ancestry} is not sorted in the same post-order manner as the cherry list in Section~\ref{methods:v2newick}, a sorting step is necessary. In the present of parental labels, we assume that the parental node labels follow a similar labelling order than in the re-labelling step illustrated by Fig.~\ref{fig:relabelling} and simply sort the ancestry matrix in ascending order by the parental column. In the absence of explicit parental labels, we utilise the fact that the input is \emph{locally ordered}. In other words, two cherries with the same minimum label 
+
+\begin{equation*}
+    \begin{pmatrix}
+        a & b \\
+        a & c \\
+    \end{pmatrix}
+\end{equation*}
+
+must be ordered post-orderly, as we first process the input Newick from left to right as deep as possible (Fig.~\ref{fig:parse-snake}). In Newick format, they would be written as \texttt{((a, b)c)}. From this observation, we derive a sorting index by processing the ancestry from top to bottom described in Algorithm~\ref{alg:order_cherries}. An illustration, using the output from Fig.~\ref{fig:parse-snake} as an example, is presented in Fig.~\ref{fig:ordercherries}
+
+\input{alg/order_cherries_no_parents}
+
+\input{fig/order_cherries_no_parents}
+
+The obtained ordered ancestry mirrors the cherry list in Algorithm~\ref{alg:to_pairs}. To infer the inverse operation and finally recover a phylo2vec vector \v, we observe that each cherry (the first two columns of the ancestry) comprises a newly added leaf (right) and its smallest descendant (left). To infer the branch from which the added leaf descends, we need to count how many cherries have already been placed at labels strictly smaller than its own. To that end, we employ Fenwick trees~\cite{ryabko1992, fenwick1994}, which support dynamic prefix-sum queries for tracking the number of earlier placements. A sketch of the implemented algorithm in Scheidwasser \textit{et al.}~\cite{scheidwasser2025} is presented in Algorithm~\ref{alg:buildvector}, with an illustrated example in Fig.~\ref{fig:build_vector}.
+
+\input{alg/build_vector}
+
+\input{fig/build_vector}
+
+\subsection{Complexity}
+
+\begin{table}[htbp]
+    \centering
+    \small
+    \caption{Complexity of phylo2vec conversion algorithms. $n$: number of leaves in a rooted binary tree. By default, the average complexity is shown. If the best-case or the worst-case complexity differ, they are respectively highlighted in green and red.}
+    \begin{tabular}{lllc}
+        \toprule
+        Algorithm & Pipeline & Ref. & Time complexity ($\bigO$) \\
+        \midrule
+        \multicolumn{4}{c}{\v~$\rightarrow$ Newick} \\
+        \midrule
+         Form a post-order-like list of cherries & \v~$\rightarrow \bm{p}$ & Algorithm~\ref{alg:to_pairs}; Fig.~\ref{fig:to_pairs} & $n \log n$ (\colorbox{green!10}{$n$}) \\
+         Build a Newick string from $\bm{p}$ & $\bm{p} \rightarrow$ Newick & Fig.~\ref{fig:build_newick} & $n \sqrt n$ $\big($\colorbox{green!10}{$n \log n$}, \colorbox{red!10}{$n^2$}$\big)$ \\
+         \midrule
+         \multicolumn{4}{c}{Newick $\rightarrow$ \v} \\
+         \midrule
+         Parse a Newick string & Newick $\rightarrow \bm{a}$ & Fig.~\ref{fig:parse-snake} & $n$ \\
+         Order $\bm{a}$ & $\bm{a}\rightarrow \bm{a}$ & Algorithm~\ref{alg:order_cherries}; Fig.~\ref{fig:ordercherries} & $n$ $\big(\colorbox{red!10}{$n\log n$}\big)$ \\
+         Build a vector & $\bm{a} \rightarrow$ \v & Algorithm~\ref{alg:buildvector}
+         ; Fig.~\ref{fig:build_vector} & $n \log n$ \\
+         \bottomrule
+    \end{tabular}
+    \label{tab:cpxity}
+\end{table}
+
+Table~\ref{tab:cpxity} summarises the complexity of the different algorithms to convert a phylo2vec vector \v to a Newick string and vice versa.
+
+\subsubsection{Cherry list}
+
+The naive implementation presented in Algorithm~\ref{alg:to_pairs} has a best-case complexity of $\bigO(n)$ for ordered vectors (only \texttt{append} operations, which are $\bigO(1)$), and worst-case complexity of $\bigO(n^2)$ for completely unordered vectors (only \texttt{insert} operations, which are $\bigO(n)$). As $n$ grows, the ratio of leaf placements which satisfy $v_j < j$ tends to $1/2$, thus making the average complexity $\bigO(n^{1.5})$ or $\bigO(n\sqrt{n})$. An optimized implementation~\cite{scheidwasser2025} makes use of \gls{avl} trees~\cite{adelson1962}, a self-balancing binary search tree where insert operations are $\bigO(\log n)$ no matter the insertion position. Thus, the best, average, and worst-case complexity of an \gls{avl}-based algorithm is $\bigO(n \log n)$. With that in mind, the current version of the \texttt{phylo2vec} package~\cite{scheidwasser2025} employs the naive algorithm for ordered vectors $\big(\bigO(n)\big)$, and the \gls{avl}-based algorithm for non-ordered vectors $\big(\bigO(n\log n)\big)$ as $\log n$ grows less quickly than $\sqrt n$.
+
+\subsubsection{Newick building}
+
+In Fig.~\ref{fig:build_newick}, the complexity of cache building is $\bigO(n \log n)$, as the number of decimal digits in an integer $N$ is $\lfloor\log N\rfloor+1$ \textcolor{red}{source}. The second stage involves $n-1$ iterations (one per pair), making the time complexity linear in the number of steps. However, the actual time complexity will largely depend on string concatenation operations, which themselves are impacted by tree topology. We can distinguish a few scenarios to provide a rough estimate of best-, average- and worst-case complexity. On the one hand, imbalanced trees such as caterpillar trees (e.g., \v~$= \begin{pmatrix} 0 & 0 & 0 & ... & 0\end{pmatrix}$) will involve consecutive string concatenations with an ever growing string at $\kappa_0$, thus producing a worst-case complexity of $O(n^2)$. Conversely, balanced trees (e.g., \v~$= \begin{pmatrix} 0 & 1 & 0 & 1 & ... & 0 & 1\end{pmatrix}$) implies a more even distribution of the concatenation operations: each character will be copied at most $O(\log n)$ times as it propagates up the tree levels, yielding a best-case complexity of $O(n \log n)$. A reasonable estimate for the the average complexity is $\bigO(n \sqrt n)$, as the average height of binary trees is $\bigO(\sqrt n)$~\cite{flajolet1982}.
+
+\subsubsection{Newick parsing}
+
+Since each character is examined at most once, the complexity of the parsing function is bounded by the length of the Newick string, resulting in a time complexity of $O(L)$, where $L$ is the number of characters in the Newick string. Since Newick format representations grow linearly with the number of leaves, the time complexity can be written as $O(n)$.
+
+\subsubsection{Ancestry sorting}
+
+Both algorithms for ancestry sorting run in linear $\big(\bigO(n)\big)$ time. If the input Newick contained explicit parent labels, we can utilise the ancestry's parent column as a sorting index to reorder the ancestry rows. This is possible because the parent column contain unique internal labels $n, ..., 2(n-1)$. Conversely, Algorithm~\ref{alg:order_cherries} exploits local orderings to derive a sorting index, which is also performed in linear time. However, it requires a stable sorting step which is linearithmic $\big(\bigO(n\log n)\big)$.
+
+\subsubsection{Vector building}
+
+As mentioned in Section~\ref{methods:newick2v}, building a vector from a sorted ancestry requires the implementation of Fenwick trees for tracking cherry placements. Both prefix sum and updates are logarithmic operations, making the algorithm linearithmic in time $\big(\bigO(n\log n)\big)$.
+
+\subsection{Phylo2Mat: extending phylo2vec vectors with branch length annotations}
+
+Whereas the topology of a tree depicts the evolutionary relationships between different entities, branch lengths are essential to quantify the amount of evolution that has occurred along each lineage. To incorporate that information, we extend the vector formulation of phylo2vec into a matrix (we call the resulting format \emph{phylo2mat} with two columns for branch length annotations. The order of the branch lengths when representing the topology \v~as an ancestry, i.e., a list of cherries represented as triplets $(c_1, c_2, p)$, where $c_1$ and $c_2$ are children nodes and $p$ the parental node (see Section~\ref{methods:newick2v}). Fig.~\ref{fig:phylo2mat} shows an example on how to annotate a tree from a phylo2mat matrix. 
+
+All conversion algorithms described in Section~\ref{methods:v2newick} and Section~\ref{methods:newick2v} are broadly applicable to this extended format. During cherry ordering (Algorithm~\ref{alg:order_cherries}), an extra step is required to make the matrix formulation invariant to cherry permutations. \newline For instance, the isomorphic Newick strings \texttt{((1:0.1,2:0.2)3:0.3);} and \texttt{((2:0.2,1:0.1)3:0.3)} should yield the same matrix. To that end, we enforce an extra row ordering step, whereby each triplet is sorted as $c_1', c_2', p$ such that the smallest descendant of $c_1'$ is smaller than that of $c_2'$. This operation, in addition to branch length parsing in Newick strings, incur some additional overhead without however changing algorithm complexity.
+
+\input{fig/phylo2mat}
 
 \subsection{Implementation}
 
-An original implementation was performed in Python, using numpy for vector operations and numba for speedups using just-in-time compilation. The current implementations aims to broaden the scope of the original implementation to make it available in both Pyton and R, with core functions written in Rust. CI/CD with GitHub Actions, and documentation is provided via ReadTheDocs.
+The original version of phylo2vec was purely implemented in Python, using \texttt{NumPy}~\cite{harris2020} for vector operations and \texttt{numba}~\cite{lam2015} to optimize NumPy-based functions using just-in-time compilation. The current implementation (v1.3.1)~\cite{scheidwasser2025} features several optimisations from an algorithmic (\gls{avl} tree-based conversion from \v~to Newick, Fenwick tree-based conversion from Newick to \v) and computational efficiency point of view, with core functions written in Rust~\cite{rust}. More specifically, More specifically, we chose Rust for its high performance, memory safety and interoperability with other high-level programming languages, notably via \texttt{PyO3} (\url{https://pyo3.rs/v0.25.1/}) for Python and \texttt{rextendr}~\cite{wilke2025} for R. In addition, we provide comprehensive documentation with notebook-based demos using \texttt{Read the Docs} (\url{https://about.readthedocs.com/}), and a robust pipeline for continous integration (CI) and continuous delivery (CD) using GitHub Actions (\url{https://docs.github.com/en/actions/get-started/understand-github-actions}) to ensure reliable deployments while maintaining high code quality.
 
-\textcolor{red}{why rust?}
+% \subsubsection{Maintenance and status of the software}
+% Workshop, plans to delve deeper into inference-based operations.
 
-The current implementation features an increasing range of operations: cophenetic distances, graph operations, and skeletons for phylogenetic inference in Python.
+\subsubsection{Other operations}
+
+In addition to Newick conversion and branch length incorporation, we provide a number of other operations for manipulating trees using phylo2vec and phylo2mat objects. Firstly, we provide several conversion functions of phylo2vec vectors (resp. phylo2mat matrices) to other objects used in phylogenetics, such as phylogenetic variance-covariance matrices, precision matrices (inverse of the phylogenetic variance-covariance matrix), and cophenetic distance matrices, using algorithms inspired by the \texttt{ape}~\cite{paradis2019} and \texttt{MCMCglmm}~\cite{hadfield2010} packages. Second, we add several  
+
+% \textcolor{red}{why rust?}
+
+% The current implementation features an increasing range of operations: cophenetic distances, graph operations, and skeletons for phylogenetic inference in Python.
 
 \subsection{Properties}
 We have been interested in studying four properties of Phylo2Vec/Phylo2Mat objects: compressibility, fast sampling, fast comparison, and their metricness.
@@ -384,8 +171,7 @@ For sampling and comparison, we perform benchmarking experiments for $n$ = 10,00
 
 For distance measure, we employ a simple Hamming distance measure between vectors, and we compare it to traditional distance measures between trees: number of \gls{spr}, \gls{rf}, and \gls{kf}.
 
-\subsubsection{Maintenance and status of the software}
-Workshop, plans to delve deeper into inference-based operations.
+
 
 \subsection{Phylogenetic inference possibilities}
 To evaluate the potential of Phylo2Vec as a basis for phylogenetic inference operations, we devised a simple hill-climbing scheme where we pick an index of $v$, swap its value for a new random value in $0$, $2i-1$.

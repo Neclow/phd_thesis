@@ -1,0 +1,30 @@
+\begin{figure}[htbp]
+    \centering
+    \small
+    \begin{tabular}{p{2cm} l p{5cm} c}
+    \toprule
+    Step ($j$) & \v & \textsb{Action} & $\bm{p}$ \\
+    \midrule
+    Step 0 \newline Initial state & \v~= $\begin{pmatrix} 0 \end{pmatrix}$ & - & $\begin{pmatrix}
+        0 & 1
+    \end{pmatrix}$ \\~\\
+    Step 1: $v_1 = \RoyalBlue{0}$ \newline Next leaf: \Mahogany{2} & \v~ = $\begin{pmatrix} 0 & 0\end{pmatrix}$ & $v_j \leq j$ \newline \Mahogany{2} forms a cherry with \textcolor{Violet}{0} \newline \textbf{append (\textcolor{Violet}{0}, \Mahogany{2})} & \adjustbox{valign=t}{$\begin{pmatrix}
+        0 & 1 \\
+        \textcolor{Violet}{0} & \Mahogany{2}
+    \end{pmatrix}$} \\~\\
+    Step 2: $v_2 = \RoyalBlue{4}$ \newline Next leaf: \Mahogany{3} & \v~ = $\begin{pmatrix} 0 & 0 & 4 \end{pmatrix}$ & $v_j > j$ \newline smallest descendant of branch \RoyalBlue{4} is \textcolor{Violet}{0} (see~\ref{fig:p2vtree}) \newline \Mahogany{3} thus formed a cherry with \textcolor{Violet}{0} \newline \textbf{insert (\textcolor{Violet}{0}, \Mahogany{3}) at index $\textcolor{RoyalBlue}{4} - 2j = 0$} & \adjustbox{valign=t}{$\begin{pmatrix}
+        \textcolor{Violet}{0} & \Mahogany{3} \\
+        0 & 1 \\
+        0 & 2
+    \end{pmatrix}$} \\~\\
+    Step 3: $v_3 = \RoyalBlue{3}$ \newline Next leaf: \Mahogany{4} & \v~ = $\begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ & $v_j \leq j$ \newline \Mahogany{4} forms a cherry with \textcolor{Violet}{3} \newline \textbf{append (\textcolor{Violet}{3}, \Mahogany{4})}  & \adjustbox{valign=t}{$\begin{pmatrix}
+        0 & 3 \\
+        0 & 1 \\
+        0 & 2 \\
+        \textcolor{Violet}{3} & \Mahogany{4}
+    \end{pmatrix}$} \\
+    \bottomrule
+    \end{tabular}
+    \caption{Illustration of Algorithm~\ref{alg:to_pairs} using \v~ = $\begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ as an example. The algorithm aims at building a list of ``cherries" ordered in a post-order fashion from \v.}
+    \label{fig:to_pairs}
+\end{figure}

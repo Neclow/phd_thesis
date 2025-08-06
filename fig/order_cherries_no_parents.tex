@@ -1,0 +1,117 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        node distance=2cm,
+        block/.style={
+            minimum width=2cm,
+            align=center,
+            draw=none,
+            font=\small
+        },
+        >=Stealth,
+        scale=0.8, every node/.style={transform shape}
+    ]
+
+    % Define nodes for each step
+    \node (step0) [block] {
+        $\left(\begin{array}{@{}ccc|c@{}} 
+            \multicolumn{3}{c}{\bm{a}} & \bm{\mu} \\
+            \colorbox{Mahogany!10}{$0$} & \colorbox{Mahogany!10}{$2$} & \colorbox{Mahogany!10}{$2$} & ? \\ 
+            0 & 1 & 1 & ? \\ 
+            3 & 4 & 4 & ? \\ 
+            0 & 3 & 3 & ? 
+        \end{array}\right)$ \\
+        visited: $\emptyset$
+    };
+
+    \node (step1) [block, right=2cm of step0] {
+        $\begin{pmatrix} 
+            0 & 2 & 2 & \Mahogany{2} \\ 
+            \colorbox{Mahogany!10}{$0$} & \colorbox{Mahogany!10}{$1$} & \colorbox{Mahogany!10}{$1$} & ? \\
+            3 & 4 & 4 & ? \\ 
+            0 & 3 & 3 & ? 
+        \end{pmatrix}$ \\
+        visited: $\begin{Bmatrix}
+            0: 2
+        \end{Bmatrix}$
+    };
+
+    \node (step2) [block, right=2cm of step1] {
+        $\begin{pmatrix} 
+            0 & 2 & 2 & 2 \\
+            0 & 1 & 1 & \Mahogany{1} \\
+            \colorbox{Mahogany!10}{$3$} & \colorbox{Mahogany!10}{$4$} & \colorbox{Mahogany!10}{$4$}& ? \\ 
+            0 & 3 & 3 & ? 
+        \end{pmatrix}$ \\
+        visited: $\begin{Bmatrix}
+            0: & 1
+        \end{Bmatrix}$
+    };
+
+    \node (step3) [block, right=2cm of step2] {
+        $\begin{pmatrix} 
+            0 & 2 & 2 & 2 \\
+            0 & 1 & 1 & 1 \\
+            3 & 4 & 4 & 4 \\
+            \colorbox{Mahogany!10}{$0$} & \colorbox{Mahogany!10}{$3$} & \colorbox{Mahogany!10}{$3$} & ? 
+        \end{pmatrix}$ \\
+        visited: $\begin{Bmatrix}
+            0: & 1 \\
+            3: & 4 \\
+        \end{Bmatrix}$
+    };
+
+    \node (step4) [block, right=2cm of step3] {
+        $\begin{pmatrix} 
+            0 & 2 & 2 & 2 \\
+            0 & 1 & 1 & 1 \\
+            3 & 4 & 4 & 4 \\
+            \colorbox{Mahogany!10}{$0$} & \colorbox{Mahogany!10}{$3$} & \colorbox{Mahogany!10}{$3$} & \Mahogany{1} \\
+        \end{pmatrix}$ \\
+        visited: $\begin{Bmatrix}
+            0: & 1 \\
+            3: & 4 \\
+        \end{Bmatrix}$
+    };
+
+    \node[scale=1.5, transform shape] (output) [block, below=2cm of step2] {
+        $\left(\begin{array}{@{}ccc|c@{}} 
+            \multicolumn{3}{c}{\bm{a}} & \bm{\mu} \\
+            3 & 4 & 4 & 4 \\ 
+            0 & 2 & 2 & 2 \\ 
+            0 & 1 & 1 & 1 \\ 
+            0 & 3 & 3 & 1 
+        \end{array}\right)$
+    };
+
+    \draw [->] (step0.east) to node[midway, above, align=center, font=\scriptsize] {
+        $\min = 0$ \\ 
+        $\max = 2$ \\ 
+        0 visited? \xmark \\
+        \textbf{index = 2}
+      }  (step1.west);
+    \draw [->] (step1.east) to node[midway, above, align=center, font=\scriptsize] {
+        $\min = 0$ \\ 
+        $\max = 1$ \\ 
+        0 visited? \cmark (2) \\
+        $\min(1, 2) = 1$ \\
+        \textbf{index = 1}
+      } (step2.west);
+    \draw [->] (step2.east) to node[midway, above, align=center, font=\scriptsize] {
+        $\min = 3$ \\ 
+        $\max = 4$ \\ 
+        3 visited? \xmark \\
+        \textbf{index = 4}
+      } (step3.west);
+    \draw [->] (step3.east) to node[midway, above, align=center, font=\scriptsize] {
+        $\min = 0$ \\ 
+        $\max = 3$ \\ 
+        0 visited? \cmark (1) \\
+        $\min(1, 3) = 1$ \\
+        \textbf{index = 1}
+      } (step4.west);
+    \draw [->, bend left=45] (step4.south) to node[pos=0.66, yshift=-0.1cm, below, align=center] {sort according to $\bm{\mu}$, decreasing} (output.east);
+    \end{tikzpicture}
+    \caption{Illustration of Algorithm~\ref{alg:order_cherries}, using the output from Fig.~\ref{fig:parse-snake}.}
+    \label{fig:ordercherries}
+\end{figure}

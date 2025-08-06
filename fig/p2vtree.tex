@@ -1,0 +1,27 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[thick, >=Stealth, scale=1.1, every node/.style={scale=0.9}]
+        % Nodes
+        \node[circle, fill=black, text=white] (8) at (2.5, 3) {8};
+        \node[circle, fill=Peach] (7) at (1.25, 2) {7};
+        \node[circle, fill=Peach] (6) at (0.5, 1) {6};
+        \node[circle, fill=Peach] (5) at (3.5, 1.5) {5};
+        \node[circle, fill=Mahogany] (0) at (0, 0) {0};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {2};
+        \node[circle, fill=Mahogany] (1) at (2, 0) {1};
+        \node[circle, fill=Mahogany] (3) at (3, 0) {3};f
+        \node[circle, fill=Mahogany] (4) at (4, 0) {4};
+
+        % Directed edges
+        \draw[->] (8) -- (5) node[midway, sloped, above] {5};
+        \draw[->] (8) -- (7) node[midway, sloped, above] {7};
+        \draw[->] (7) -- (1) node[midway, sloped, above] {1};
+        \draw[->] (7) -- (6) node[midway, sloped, above] {6};
+        \draw[->] (6) -- (0) node[midway, sloped, above] {0};
+        \draw[->] (6) -- (2) node[midway, sloped, above] {2};
+        \draw[->] (5) -- (4) node[midway, sloped, above] {4};
+        \draw[->] (5) -- (3) node[midway, sloped, above] {3};
+    \end{tikzpicture}
+    \caption{A diagram of a tree topology satisfying the assumptions for phylo2vec. The vector representation of this tree is $\begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ (see~\ref{methods:v2newick}).}
+    \label{fig:p2vtree}
+\end{figure}

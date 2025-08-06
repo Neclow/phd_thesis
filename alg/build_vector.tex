@@ -1,0 +1,26 @@
+\begin{algorithm}[htbp]
+\begin{algorithmic}[1]
+\Require $\bm{a}$ \Comment{Ordered ancestry}
+
+\Comment{$\bm{a}$ is of length $n-1$ with $n$ the number of leaves}
+\State $\bm{f} = \begin{pmatrix}
+    0 & 0 & ...
+\end{pmatrix}$ \Comment{Fenwick tree data. Length: $n-1$}
+\State $\bm{v} = \begin{pmatrix}
+    0 & 0 & ...
+\end{pmatrix}$ \Comment{Length: $n-1$}
+\For{$j \gets 0$ \textbf{to} $n - 2$}
+    \State $c_m \gets \min(\bm{a}_j), c_M \gets \max(\bm{a}_j)$
+    \State $i \gets \bm{f}_\Sigma(c_M-1)$ \Comment{Fenwick prefix sum}
+    \If{$i = 0$} 
+        \State $\bm{v}_{c_M-1} = c_m$ 
+    \Else
+        \State $\bm{v}_{c_M-1} = c_M - 1 + \bm{f}_\Sigma(c_M-1)$ 
+    \EndIf
+    \State $\bm{f}$.update($c_M$, 1) \Comment{Fenwick update}
+\EndFor
+\State \Return $\bm{v}$
+\end{algorithmic}
+\caption{Build a phylo2vec vector from an ordered ancestry.}
+\label{alg:buildvector}
+\end{algorithm}

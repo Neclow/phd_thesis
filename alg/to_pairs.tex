@@ -1,0 +1,21 @@
+\begin{algorithm}[htbp]
+\begin{algorithmic}[1]
+\Require \v $\in \mathbb{V}$ of length $n-1$ with $n$ the number of leaves
+\State \textbf{Initialize} $\bm{p} \gets [(0, 1)]$ \Comment{Cherry list for a starting 2-leaf tree}
+\For{$j \gets 1$ \textbf{to} $n - 2$}
+    \State $\ell \gets i + 1$ \Comment next leaf
+    \If{$v_j \leq j$} 
+        \Comment{``Ordered" node: $\ell$ arises from a leaf branch. Append is sufficient}
+        \State $\bm{p}.\text{append}\big((v_j, \ell)\big)$
+    \Else
+        \Comment{``Unordered" node: $\ell$ arises from an internal branch}.
+        \State $\hat{j} \gets 2j - v_j$ \Comment{Insertion position}
+        \State $c_1 \gets \bm{p}_{\hat{j}, 0}$ \Comment{Smallest descending leaf of that branch}
+        \State $\bm{p}.\text{insert}\big(\hat{j}, (c_1, \ell)\big)$
+    \EndIf
+\EndFor
+\State \Return $\bm{p}$
+\end{algorithmic}
+\caption{Naive implementation of a post-order traversal formation from a phylo2vec vector \v.}
+\label{alg:to_pairs}
+\end{algorithm}

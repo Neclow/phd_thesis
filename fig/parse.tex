@@ -1,0 +1,76 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        node distance=2cm,
+        block/.style={
+            rectangle,
+            minimum width=2cm,
+            % minimum height=1.5cm,
+            % text width=4cm,
+            align=center,
+            rounded corners=4pt,
+            draw,
+            font=\small
+        },
+        ancestry/.style={
+            fill=Mahogany!10,
+        },
+        newick/.style={
+            fill=Peach!10,
+        },
+        arrow/.style={
+            -Latex,
+            thick,
+            bend left=45
+        },
+        title/.style={
+            font=\bfseries\small, % Bold and small font for titles
+            anchor=south, % Anchor the title to the bottom of the node to align with the top row
+        },
+        scale=0.9, every node/.style={transform shape}
+    ]
+
+    % Define nodes for each step
+    \node (step0) [newick, block] {`(\textcolor{red}{(0,2)6},1)7,(3,4)5)8;'};
+
+    \node (step1anc) [ancestry, block, below right=0.25cm and 1.5cm of step0] {$\begin{pmatrix} 0 & 2 & 6 \end{pmatrix}$};
+    \node (step1newick) [newick, block, below left=0.25cm and 1.5cm of step1anc] {`((\textcolor{red}{(}\textcolor{Purple}{6}\textcolor{red}{,1)7},(3,4)5)8;'};
+    
+    \node (step2anc) [ancestry, block, below right=0.25cm and 1.5cm of step1newick] {$\begin{pmatrix} 0 & 2 & 6 \\ 6 & 1 & 7 \end{pmatrix}$};
+    \node (step2newick) [newick, block, below left=0.25cm and 1.5cm of step2anc] {`(\textcolor{Purple}{7},\textcolor{red}{(3,4)5})8;'};
+
+    \node (step3anc) [ancestry, block, below right=0.25cm and 1.5cm of step2newick] {$\begin{pmatrix} 0 & 2 & 6 \\ 6 & 1 & 7 \\ 3 & 4 & 5 \end{pmatrix}$};
+    \node (step3newick) [newick, block, below left=0.25cm and 1.5cm of step3anc] {`\textcolor{red}{(7,\textcolor{Purple}{5})8};'};
+    
+    \node (step4anc) [ancestry, block, below right=0.25cm and 1.5cm of step3newick] {$\begin{pmatrix} 0 & 2 & 6 \\ 6 & 1 & 7 \\ 3 & 4 & 5 \\ 7 & 5 & 8 \end{pmatrix}$};
+    \node (step4newick) [newick, block, below left=0.25cm and 1.5cm of step4anc] {`\textcolor{Purple}{8};'};
+
+    % Title nodes
+    \node (newicktitle) [title, above=0.25cm of step0] {Newick string};
+    \node (ancestrytitle) [title, above=0.25cm of step1anc] {Ancestry};
+
+    % Draw the "snake" arrows
+    \draw [arrow] (step0.south east) to (step1anc.north west);
+    \draw [arrow, Purple!70] (step1anc.south west) to (step1newick.north east);
+    \draw [arrow] (step1newick.south east) to (step2anc.north west);
+    \draw [arrow, Purple!70] (step2anc.south west) to (step2newick.north east);
+    \draw [arrow] (step2newick.south east) to (step3anc.north west);
+    \draw [arrow, Purple!70] (step3anc.south west) to (step3newick.north east);
+    \draw [arrow] (step3newick.south east) to (step4anc.north west);
+    \draw [arrow, Purple!70] (step4anc.south west) to (step4newick.north east);
+
+    % Draw annotation arrows
+    \node (extra1) [above=1cm of ancestrytitle, xshift=3cm] {Add triplet to ancestry};
+    \draw[-Latex, thick, dashed] 
+        (extra1.south west) 
+        -- ($($(step0.south east)!0.33!(step1anc.north west)$) + (0.25cm,0.35cm)$);
+
+    \node (extra2) [above=0.1cm of step2anc, xshift=3cm, align=center, text=Purple] {Keep the parental node \\ and find the next triplet};
+    \draw[-Latex, thick, dashed, Purple] 
+        (extra2.west) 
+        -- ($($(step1anc.south west)!0.4!(step1newick.north east)$) + (0.25cm,-0.25cm)$);
+
+    \end{tikzpicture}
+    \caption{Illustration of the parsing from a Newick string to the ``ancestry" object (also referred as the ``ancestry" matrix in Scheidwasser \textit{et al.}~\cite{scheidwasser2025}). In the absence of parental nodes, the third element of the triplet is assigned as the maximum of the two first elements, and we keep the minimum.}
+    \label{fig:parse-snake}
+\end{figure}

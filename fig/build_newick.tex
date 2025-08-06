@@ -1,0 +1,50 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{tabular}{p{6cm}l}
+        \toprule
+        Initial state: cherry list & $\bm{p} = \begin{pmatrix}
+            \textcolor{RubineRed}{0} & 3 \\
+            \textcolor{RubineRed}{0} & 1 \\
+            \textcolor{RubineRed}{0} & 2 \\
+            \textcolor{Purple}{3} & 4 \\
+        \end{pmatrix}$ \\
+        \midrule
+        Stage 1: build a string cache \newline for each label $\ell$, prepend \texttt{(} each time it appears as a left child in $\bm{p}$ & $\kappa = 
+        \begin{Bmatrix} 
+        \text{leaf} & \text{sub-string} \\
+        0 & \texttt{`\textcolor{RubineRed}{(((}0'} \\ 
+        1 & \texttt{`1'} \\ 
+        2 & \texttt{`2'} \\ 
+        3 & \texttt{`\textcolor{Purple}{(}3'} \\ 
+        4 & \texttt{`4'} \end{Bmatrix}$ 
+        \\
+        \midrule
+        Stage 2: process $\bm{p}$ from bottom to top \\
+        \quad Step 1: (3, 4), next parent = 5 \newline\hspace*{1em}Pair \textcolor{Mahogany}{4} with \textcolor{Purple}{3}, append \textcolor{RoyalBlue}{5} & $\kappa =
+        \begin{Bmatrix} 0 & \texttt{`(((0'} \\ 
+        1 & \texttt{`1'} \\ 
+        2 & \texttt{`2'} 
+        \\ 3 & 
+        \texttt{`\textcolor{Purple}{(3},\textcolor{Mahogany}{4})\textcolor{RoyalBlue}{5}'} 
+        \end{Bmatrix}$ \\~\\
+        \quad Step 2: (0, 2), next parent = 6 \newline\hspace*{1em}Pair \textcolor{Mahogany}{2} with \textcolor{Purple}{0}, append \textcolor{RoyalBlue}{6} & $\kappa =
+        \begin{Bmatrix} 
+            0 & \texttt{`\textcolor{Purple}{(((0},\textcolor{Mahogany}{2})\textcolor{RoyalBlue}{6}'} \\ 
+            1 & \texttt{`1'} \\ 3 & \texttt{`(3,4)5'} 
+        \end{Bmatrix}$ \\~\\
+        \quad Step 3: (0, 1), next parent = \textcolor{RoyalBlue}{7} \newline\hspace*{1em}Pair \textcolor{Mahogany}{1} with 0, append \textcolor{RoyalBlue}{7} & $\kappa =
+        \begin{Bmatrix} 
+        0 & \texttt{`\textcolor{Purple}{(((0,2)6},\textcolor{Mahogany}{1})\textcolor{RoyalBlue}{7}'} 
+        \\ 3 & \texttt{`(3,4)5'}
+        \end{Bmatrix}$ \\~\\
+        \quad Step 4: (0, 3), next parent = 8 \newline\hspace*{1em}Pair \textcolor{Mahogany}{3} with 0, append \textcolor{RoyalBlue}{8} & $\kappa =
+        \begin{Bmatrix} 
+        0 & \texttt{`\textcolor{Purple}{(((0,2)6,1)7},\textcolor{Mahogany}{(3,4)5})\textcolor{RoyalBlue}{8}'} 
+        \end{Bmatrix}$ \\
+        \midrule
+        Output: Append \texttt{;} to $\kappa_0$ & \texttt{\textbf{`(((0,2)6,1)7,(3,4)5)8;'}} \\
+        \bottomrule
+    \end{tabular}
+    \caption{Building a Newick representation of a tree, using \v~ = $\begin{pmatrix} 0 & 0 & 4 & 3 \end{pmatrix}$ as an example.}
+    \label{fig:build_newick}
+\end{figure}

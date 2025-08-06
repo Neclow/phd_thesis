@@ -1,0 +1,35 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{tabular}{ccp{4cm}cc}
+        \toprule
+        & Ancestry & State & Allocated row index & Visited \\
+        & & & $\bm{\mu}$ \\
+        \midrule
+        Input & $\begin{pmatrix} 0 & 2 & 2 \\ 0 & 1 & 1 \\ 3 & 4 & 3 \\ 0 & 3 & 3 \end{pmatrix}$ & & & $\begin{pmatrix}
+            \text{key} & \text{value} \\
+        \end{pmatrix}$ \\
+        \midrule
+        \multicolumn{5}{c}{Stage 1: find sorting indices} \\
+        \midrule
+        & $\begin{pmatrix} 0 & 2 & 2 \end{pmatrix}$ & min. label = 0 \newline max. label = 2 \newline 0 visited? \xmark & 2 & $\begin{pmatrix}
+            0 & 2
+        \end{pmatrix}$ \\
+        & $\begin{pmatrix} 0 & 1 & 1 \end{pmatrix}$ & min. label = 0 \newline max. label = 1 \newline 0 visited? \cmark \newline visited[0] = 2 & \textsb{$\min(1, 2) = 1$} & $\begin{pmatrix}
+            0 & 1
+        \end{pmatrix}$ \\
+        & $\begin{pmatrix} 3 & 4 & 3 \end{pmatrix}$ & min. label = 3 \newline max. label = 4 \newline 3 visited? \xmark & 3 & $\begin{pmatrix}
+            0 & 1 \\
+            3 & 4 \\
+        \end{pmatrix}$ \\
+        & $\begin{pmatrix} 0 & 3 & 3 \end{pmatrix}$ & min. label = 0 \newline max. label = 3 \newline 0 visited? \cmark \newline visited[0] = 1 & \textsb{$\min(1, 3) = 1$} & $\begin{pmatrix}
+            0 & 1 \\
+            3 & 4 \\
+        \end{pmatrix}$ \\
+        \midrule
+        \multicolumn{5}{c}{Stage 2: sort ancestry according to the sorting indices, in descending order} \\
+        Output & $\begin{pmatrix} & & & \bm{\mu} \\ 3 & 4 & 3 & 3 \\ 0 & 2 & 2 & 2 \\ 0 & 1 & 1 & 1 \\ 0 & 3 & 3 & 1 \end{pmatrix}$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Caption}
+    \label{fig:order_cherries}
+\end{figure}
