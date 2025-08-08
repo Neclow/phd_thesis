@@ -1,0 +1,116 @@
+\begin{figure}[htbp]
+    \centering
+    
+    % Subplot 1: Pipeline DAG
+    \subfloat[Pipeline DAG]{
+        \begin{tikzpicture}[
+            node distance=0.8cm and 1.2cm,
+            every node/.style={
+                rectangle, 
+                draw, 
+                minimum width=2cm, 
+                minimum height=0.6cm, 
+                font=\footnotesize,
+                align=center
+            },
+            arrow/.style={-{Stealth[length=2mm]}}
+        ]
+            
+            % Top level
+            \node (raw) {Raw metadata \\ (Cov3D)~\cite{gowthaman2021}};
+            
+            % Second level
+            \node (aug) [below=of raw] {Augment metadata \\ (using \gls{pdb} \\ sequence similarity searches)};
+            
+            % Third level
+            \node (download) [below=of aug] {Download structures (mmCIF) \\ (using biotite~\cite{kunzmann2018})};
+            
+            % Fourth level
+            \node (to3di) [below=of download] {Convert structures to 3Di~\cite{vankempen2024}};
+            
+            % Fifth level
+            \node (prep3di) [below left=of to3di] {Sequence\\ preprocessing\\(3di)};
+            \node (prepaa) [below right=of to3di] {Sequence\\preprocessing\\(aa)};
+            
+            % Sixth level
+            \node (intersect) [below=1.5cm of to3di] {intersect};
+            
+            % Seventh level
+            \node (subset1) [below left=of intersect] {subset@1};
+            
+            % Eighth level - from subset@1
+            \node (iqtreebaseaa) [below left=0.8cm and 0.5cm of subset1] {iqtree\_base@aa};
+            \node (iqtreebase3di) [below=0.8cm of subset1] {iqtree\_base@3di};
+            \node (cutaa) [below right=0.8cm and 0.5cm of subset1] {cut@aa};
+            \node (cut3di) [below right=0.8cm and 2.5cm of subset1] {cut@3di};
+            
+            % Ninth level
+            \node (iqtreecutaa) [below=of cutaa] {iqtree\_cut@aa};
+            \node (iqtreecut3di) [below=of cut3di] {iqtree\_cut@3di};
+            \node (maststartaa) [below=of iqtreecutaa] {mast\_start@aa};
+            \node (maststart3di) [below=of iqtreecut3di] {mast\_start@3di};
+            
+            % Bottom level
+            \node (mastiteraa) [below=1.2cm of maststartaa] {mast\_iterative@aa};
+            \node (mastiter3di) [below=1.2cm of maststart3di] {mast\_iterative@3di};
+            
+            % Arrows
+            \draw[arrow] (raw) -- (aug);
+            \draw[arrow] (aug) -- (download);
+            \draw[arrow] (download) -- (to3di);
+            \draw[arrow] (to3di) -- (prep3di);
+            \draw[arrow] (prep3di) -- (prepaa);
+            \draw[arrow] (prep3di) -- (intersect);
+            \draw[arrow] (prepaa) -- (intersect);
+            \draw[arrow] (intersect) -- (subset1);
+            \draw[arrow] (intersect) -- (subset1);
+            \draw[arrow] (intersect) -- (subset1);
+            \draw[arrow] (subset1) -- (iqtreebaseaa);
+            \draw[arrow] (subset1) -- (iqtreebase3di);
+            \draw[arrow] (subset1) -- (cutaa);
+            \draw[arrow] (subset1) -- (cut3di);
+            \draw[arrow] (cutaa) -- (iqtreecutaa);
+            \draw[arrow] (cut3di) -- (iqtreecut3di);
+            \draw[arrow] (subset1) -- (maststartaa);
+            \draw[arrow] (subset1) -- (maststart3di);
+            \draw[arrow] (iqtreecutaa) -- (maststartaa);
+            \draw[arrow] (iqtreecut3di) -- (maststart3di);
+            \draw[arrow] (iqtreecutaa) -- (mastiteraa);
+            \draw[arrow] (iqtreecut3di) -- (mastiter3di);
+            \draw[arrow] (maststartaa) -- (mastiteraa);
+            \draw[arrow] (maststart3di) -- (mastiter3di);
+            
+        \end{tikzpicture}
+    }
+    \hfill
+    % Subplot 2: Linear workflow
+    \subfloat[Processing Pipeline]{
+        \begin{tikzpicture}[
+            node distance=1.2cm,
+            every node/.style={
+                rectangle, 
+                draw, 
+                minimum width=2.5cm, 
+                minimum height=0.6cm, 
+                font=\footnotesize,
+                align=center
+            },
+            arrow/.style={-{Stealth[length=2mm]}}
+        ]
+            
+            \node (align) {align};
+            \node (trim) [below=of align] {trim};
+            \node (deduplicate) [below=of trim] {deduplicate};
+            \node (droplowgap) [below=of deduplicate] {droplowgap};
+            
+            % Arrows
+            \draw[arrow] (align) -- (trim);
+            \draw[arrow] (trim) -- (deduplicate);
+            \draw[arrow] (deduplicate) -- (droplowgap);
+            
+        \end{tikzpicture}
+    }
+    
+    \caption{Workflow diagrams showing (a) the main pipeline DAG and (b) the linear processing steps}
+    \label{fig:workflows}
+\end{figure}

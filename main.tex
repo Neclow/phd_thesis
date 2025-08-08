@@ -4,6 +4,11 @@
 \let\endtheglossary\relax
 \usepackage[english, sund, dropcaps, hyperref, submissionstatement]{ku-frontpage}
 
+% Links
+\PassOptionsToPackage{hyphens}{url}
+\PassOptionsToPackage{colorlinks}{hyperref}
+\usepackage{doi}
+
 % Fonts
 \usepackage[utf8]{inputenc}
 \usepackage[dvipsnames,rgb,table]{xcolor}
@@ -149,6 +154,7 @@
 
 \clearpage
 \begin{refcontext}
+    \small
     \printbibliography
 \end{refcontext}
 
