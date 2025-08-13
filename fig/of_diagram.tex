@@ -1,0 +1,64 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.8]
+% Define colors for points
+\definecolor{pointA}{RGB}{255, 0, 0}      % Red
+\definecolor{pointB}{RGB}{0, 150, 0}      % Green  
+\definecolor{pointC}{RGB}{0, 0, 255}      % Blue
+\definecolor{pointD}{RGB}{255, 150, 0}    % Orange
+
+% Frame 1 (t)
+\node[anchor=south] at (2, 5) {\textbf{Frame at time t}};
+\draw[dashed, thick] (-0.5, -0.5) rectangle (4.5, 4.5);
+\fill[white] (-0.5, -0.5) rectangle (4.5, 4.5);
+
+% Points in frame 1
+\fill[pointA] (1,3) circle (0.15);     % Point A
+\fill[pointB] (3,3) circle (0.15);     % Point B  
+\fill[pointC] (1,1) circle (0.15);     % Point C
+\fill[pointD] (3,1) circle (0.15);     % Point D
+
+% Labels for points in frame 1
+\node[above] at (1,3.2) {\textbf{a}};
+\node[above] at (3,3.2) {\textbf{b}};
+\node[below] at (1,0.8) {\textbf{c}};
+\node[below] at (3,0.8) {\textbf{d}};
+
+% Motion vectors from frame 1
+\draw[-{Latex[length=3mm]}, thick, black] (1,3) -- (1.8,2.2);     % A moves right-down
+\draw[-{Latex[length=3mm]}, thick, black] (3,3) -- (2.2,3.8);     % B moves left-up  
+\draw[-{Latex[length=3mm]}, thick, black] (1,1) -- (0.2,1.8);     % C moves left-up
+\draw[-{Latex[length=3mm]}, thick, black] (3,1) -- (3.8,0.2);     % D moves right-down
+
+% Frame 2 (t + δt)
+\node[anchor=south] at (8, 5) {\textbf{Frame at time t + $\delta$t}};
+\draw[dashed, thick] (5.5, -0.5) rectangle (10.5, 4.5);
+\fill[white] (5.5, -0.5) rectangle (10.5, 4.5);
+
+% Points in frame 2 - same colors (brightness constancy)
+\fill[pointA] (7.8,2.2) circle (0.15);   % Point A moved
+\fill[pointB] (8.2,3.8) circle (0.15);   % Point B moved
+\fill[pointC] (6.2,1.8) circle (0.15);   % Point C moved  
+\fill[pointD] (9.8,0.2) circle (0.15);   % Point D moved
+
+% Labels for points in frame 2
+\node[above right] at (7.8,2.35) {\textbf{a}};
+\node[above left] at (8.2,3.95) {\textbf{b}};
+\node[above left] at (6.2,1.95) {\textbf{c}};
+\node[below left] at (9.8,0.05) {\textbf{d}};
+
+% Brightness constancy equations
+\node[anchor=north, align=center] at (5.0, -0.5) {
+    $I(\mathbf{a}(t),t) = I(\mathbf{a}(t+\delta t),t+\delta t)$\\
+    $I(\mathbf{b}(t),t) = I(\mathbf{b}(t+\delta t),t+\delta t)$\\
+    $I(\mathbf{c}(t),t) = I(\mathbf{c}(t+\delta t),t+\delta t)$\\
+    $I(\mathbf{d}(t),t) = I(\mathbf{d}(t+\delta t),t+\delta t)$
+};
+
+% Arrow between frames
+\draw[-{Latex[length=2mm]}, thick] (4.6,2) -- (5.4,2);
+\node[above] at (5.0,2.2) {$\delta t$};
+
+\end{tikzpicture}
+\label{fig:of_diagram}
+\end{figure}

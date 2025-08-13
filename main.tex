@@ -33,7 +33,7 @@
 \usepackage[export]{adjustbox}
 \usepackage{graphicx}
 \usepackage[caption=false, position=top]{subfig}
-\captionsetup[subfloat]{font={bf}, skip=1pt, singlelinecheck=false}
+% \captionsetup[subfloat]{font={bf}, skip=1pt, singlelinecheck=false}
 
 % tikz
 \usepackage{tikz}
@@ -94,6 +94,12 @@
 }
 \newcommand{\m}{$\boldsymbol{m}$}
 \renewcommand{\v}{$\boldsymbol{v}$}
+\newcommand\centerofmass{%
+    \tikz[radius=0.4em] {%
+        \fill (0,0) -- ++(0.4em,0) arc [start angle=0,end angle=90] -- ++(0,-0.8em) arc [start angle=270, end angle=180];%
+        \draw (0,0) circle;%
+    }%
+}
 \renewcommand*\contentsname{Table of Contents}
 
 \usepackage[style=nature, autocite=superscript, natbib=true, uniquename=init]{biblatex}

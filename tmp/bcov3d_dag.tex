@@ -1,8 +1,7 @@
 \begin{figure}[htbp]
-    \centering
     
     % Subplot 1: Pipeline DAG
-    \subfloat[Pipeline DAG]{
+    \subfloat[Full analysis pipeline]{
         \begin{tikzpicture}[
             node distance=0.8cm and 1.2cm,
             every node/.style={
@@ -13,6 +12,12 @@
                 font=\footnotesize,
                 align=center
             },
+            aa/.style={
+                fill=RoyalBlue!10,
+            },
+            3di/.style={
+                fill=Peach!10,
+            },
             arrow/.style={-{Stealth[length=2mm]}}
         ]
             
@@ -20,7 +25,7 @@
             \node (raw) {Raw metadata \\ (Cov3D)~\cite{gowthaman2021}};
             
             % Second level
-            \node (aug) [below=of raw] {Augment metadata \\ (using \gls{pdb} \\ sequence similarity searches)};
+            \node (aug) [below=of raw] {Augment metadata \\ (using \gls{pdb} sequence \\ similarity searches)};
             
             % Third level
             \node (download) [below=of aug] {Download structures (mmCIF) \\ (using biotite~\cite{kunzmann2018})};
@@ -29,20 +34,20 @@
             \node (to3di) [below=of download] {Convert structures to 3Di~\cite{vankempen2024}};
             
             % Fifth level
-            \node (prep3di) [below left=of to3di] {Sequence\\ preprocessing\\(3di)};
-            \node (prepaa) [below right=of to3di] {Sequence\\preprocessing\\(aa)};
+            \node[3di] (prep3di) [below left=of to3di] {Sequence\\ preprocessing\\(3di)};
+            \node[aa] (prepaa) [below right=of to3di] {Sequence\\preprocessing\\(aa)};
             
             % Sixth level
-            \node (intersect) [below=1.5cm of to3di] {intersect};
+            \node (intersect) [below=1.8cm of to3di] {Intersect};
             
             % Seventh level
-            \node (subset1) [below left=of intersect] {subset@1};
+            \node (subset1) [below=of intersect] {Subset \\ (Pick 1 sequence per strain/variant)};
             
             % Eighth level - from subset@1
-            \node (iqtreebaseaa) [below left=0.8cm and 0.5cm of subset1] {iqtree\_base@aa};
-            \node (iqtreebase3di) [below=0.8cm of subset1] {iqtree\_base@3di};
-            \node (cutaa) [below right=0.8cm and 0.5cm of subset1] {cut@aa};
-            \node (cut3di) [below right=0.8cm and 2.5cm of subset1] {cut@3di};
+            \node[aa] (iqtreebaseaa) [below left=0.8cm and 0.5cm of subset1] {Basic IQ-TREE \\ run with MFP \\ (aa)};
+            \node[3di] (iqtreebase3di) [below=0.8cm of subset1] {Basic IQ-TREE \\ run with MFP \\ (3Di)};
+            \node[aa] (cutaa) [below right=0.8cm and 0.25cm of subset1] {Cut sequences into \textsb{9} \\ chunks of size 120};
+            \node (cut3di) [below right=0.8cm and 3cm of subset1] {Cut sequences into \textsb{8} \\ chunks of size 120};
             
             % Ninth level
             \node (iqtreecutaa) [below=of cutaa] {iqtree\_cut@aa};
@@ -84,7 +89,7 @@
     }
     \hfill
     % Subplot 2: Linear workflow
-    \subfloat[Processing Pipeline]{
+    \subfloat[Sequence preprocessing pipeline]{
         \begin{tikzpicture}[
             node distance=1.2cm,
             every node/.style={
