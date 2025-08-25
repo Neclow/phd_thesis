@@ -1,26 +1,35 @@
+\setlength{\tabcolsep}{2pt}
 \begin{table}[htbp]
 \centering
-\caption{Distribution of \textit{Betacoronavirus} strains and variants in the study. For SARS-CoV-2, ``ambiguous" indicates that the variant was or could not be determined with certainty. In Cov3D~\cite{gowthaman2021}, they are typically named as ``Orig" or ``none", but the exact meaning of these labels is uncertain. Consequently, these structures were ignored in downstream analyses.}
-\footnotesize
-\begin{tabular}{lrlrlr}
+\scriptsize
+\caption{Distribution of \textit{Betacoronavirus} strains and variants in the study. For SARS-CoV-2, ``ambiguous" indicates that the variant was or could not be determined with certainty. In Cov3D~\cite{gowthaman2021}, they are typically named as ``Orig" or ``none", but the exact meaning of these labels is uncertain. Consequently, these structures were ignored in downstream analyses. \textit{Sarb.}: \textit{Sarbecovirus}; \textit{Merb.}: \textit{Merbecovirus}; \textit{Emb.}: \textit{Embecovirus}. ACE2: angiontensin-converting enzyme 2; DPP4: Dipeptidyl peptidase-4; 9-Oc-Ac-Sia: 9-O-acetylated sialic acids TMPRSS2: Transmembrane protease, serine 2; CEACAM1: Carcinoembryonic antigen-related cell adhesion molecule 1. \textcolor{red}{See ref. scheidwasser2025b for references and more details.}}
+\begin{tabular}{lllrlllr}
 \toprule
-Strain (variant)               & Count & Strain (variant)               & Count & Strain (variant)               & Count \\
+Strain                & Subgenus               & Receptor                    & Count & Strain                                  & Subgenus               & Receptor                & Count \\
 \midrule
-SARS-CoV-2 (NS)       & 1108 & BatCoV RaTG13        & 3 & BtRs-BetaCoV/BtKY72            & 1 \\
-SARS-CoV-2 (Omicron)  & 411  & BatCoV SHC014        & 3 & BtRs-BetaCoV/GX2013            & 1 \\
-SARS-CoV-2 (Other)    & 184  & CN-HedgehogCoV HKU31 & 2 & BtRs-BetaCoV/YN2013            & 1 \\
-SARS-CoV-2 (Delta)    & 100  & MCoV A59             & 2 & BtSY1                          & 1 \\
-SARS-CoV              & 78   & BatCoV BM48-31       & 1 & Civet SARS CoV 007             & 1 \\
-MERS-CoV              & 70   & BatCoV HKU5-20       & 1 & Civet SARS CoV SZ3             & 1 \\
-HCoV-HKU1             & 50   & BatCoV RmyN02        & 1 & EU-HedgehogCoV                 & 1 \\
-SARS-CoV-2 (Alpha)    & 44   & BatCoV BANAL-103     & 1 & MERS-like BtCoV/Ii/GD/2014-422 & 1 \\
-SARS-CoV-2 (Wildtype) & 22   & BatCoV BANAL-52      & 1 & MERS-like PDF-2180             & 1 \\
-HCoV-OC43             & 14   & BatCoV CX1           & 1 & PCoV GD                        & 1 \\
-Bat SL-CoV-WIV1       & 6    & BatCov HKU25         & 1 & PCoV-GX                        & 1 \\
-BatCoV HKU5           & 4    & BatCoV Vs-CoV 1      & 1 & PRD-0038                       & 1 \\
-BatCoV BANAL-20-236   & 3    & BtCoV-422            & 1 & SA-BatCoV                      & 1 \\
-BatCoV BANAL-20-52    & 3    & BtRf-BetaCoV/HeB2013 & 1 & SE-PangolinCoV MjHKU4r-Cov-1   & 1  \\
+SARS-CoV-2 (NS)       & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 1108  & BatCoV CX1                     & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}                    & 1     \\
+SARS-CoV-2 (Omicron)  & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 411   & BatCov HKU25                   & \textit{\textcolor{RoyalBlue}{Merb.}} & \textsb{ACE2}                    & 1     \\
+SARS-CoV-2 (Other)    & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 184   & BatCoV HKU5-20                 & \textit{\textcolor{RoyalBlue}{Merb.}} & \textsb{ACE2}                    & 1     \\
+SARS-CoV-2 (Delta)    & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 100   & BatCoV RmyN02                   & \textit{\textcolor{BrickRed}{Sarb.}} & Unknown                 & 1     \\
+SARS-CoV              & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 78    & BatCoV Vs-CoV 1               & \textit{\textcolor{RoyalBlue}{Merb.}} & Unknown                        & 1     \\
+MERS-CoV              & \textit{\textcolor{RoyalBlue}{Merb.}} & DPP4               & 70    & BtCoV-422                      & \textit{\textcolor{RoyalBlue}{Merb.}} & DPP4                    & 1     \\
+HCoV-HKU1             & \textit{\textcolor{OliveGreen}{Emb.}}  &  9-O-Ac-Sia         & 50    & BtRf-BetaCoV/HeB2013           & \textit{\textcolor{BrickRed}{Sarb.}} & Unknown & 1     \\
+SARS-CoV-2 (Alpha)    & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 44    & BtRs-BetaCoV/BtKY72            & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}                    & 1     \\
+SARS-CoV-2 (Wildtype) & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 22    & BtRs-BetaCoV/GX2013            & \textit{\textcolor{BrickRed}{Sarb.}} & Unknown & 1     \\
+HCoV-OC43             & \textit{\textcolor{OliveGreen}{Emb.}}  & 9-O-Ac-Sia         & 14    & BtRs-BetaCoV/YN2013            & \textit{\textcolor{BrickRed}{Sarb.}} & Unknown & 1     \\
+Bat SL-CoV-WIV1       & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 6     & BtSY1                          & \textit{\textcolor{BrickRed}{Sarb.}} &  Unknown &  1 \\
+BatCoV HKU5           & \textit{\textcolor{RoyalBlue}{Merb.}} & \textsb{ACE2}               & 4     & Civet SARS CoV 007             & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}                    & 1     \\
+BatCoV BANAL-20-236   & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 3     & Civet SARS CoV SZ3             & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}                    & 1     \\
+BatCoV BANAL-20-52    & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 3     & EU-HedgehogCoV                 & \textit{\textcolor{RoyalBlue}{Merb.}} & Unknown      & 1     \\
+BatCoV RaTG13         & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 3     & MERS-like BtCoV/Ii/GD/2014-422 & \textit{\textcolor{RoyalBlue}{Merb.}} & DPP4                    & 1     \\
+BatCoV SHC014         & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 3     & MERS-like PDF-2180             & \textit{\textcolor{RoyalBlue}{Merb.}} & \textsb{ACE2}                    & 1     \\
+CN-HedgehogCoV HKU31  & \textit{\textcolor{RoyalBlue}{Merb.}} & Unknown & 2     & PCoV-GD                        & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}                    & 1     \\
+MCoV A59              & \textit{\textcolor{OliveGreen}{Emb.}}  & CEACAM1             & 2     & PCoV-GX                        & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}                    & 1     \\
+BatCoV BANAL-103      & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 1     & PRD-0038                       & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}                    & 1     \\
+BatCoV BANAL-52       & \textit{\textcolor{BrickRed}{Sarb.}} & \textsb{ACE2}               & 1     & SA-BatCoV                      & \textit{\textcolor{RoyalBlue}{Merb.}} & Unknown      & 1     \\
+BatCoV BM48-31        & \textit{\textcolor{BrickRed}{Sarb.}} & Unknown           & 1     & SE-PangolinCoV MjHKU4r-Cov-1   & \textit{\textcolor{RoyalBlue}{Merb.}} & DPP4                    & 1     \\
 \bottomrule
 \end{tabular}
 \label{table:bcov3d_counts}
 \end{table}
+\setlength{\tabcolsep}{6pt}
