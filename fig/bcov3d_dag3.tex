@@ -1,10 +1,12 @@
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
     \centering
     \small
+    \hspace{-0.5cm}%
     \begin{tikzpicture}[
         node distance=1.2cm,
         every node/.style={
             rectangle, 
+            rounded corners,
             draw, 
             minimum width=2.5cm, 
             minimum height=0.6cm, 
@@ -15,40 +17,47 @@
         arrow/.style={-{Stealth[length=2mm]}},
         darrow/.style={
             -{Stealth[length=3mm]},
-            dashed, line width=1mm,
+            dashed, line width=0.57mm,
         },
         dinterm/.style={
-            dashed, line width=1mm,
-        }
+            dashed, line width=0.75mm,
+        },
+        scale=1.03
     ]
     
     % Background rectangles for each column
-    \fill[RoyalBlue!20] (-3, 5.5) rectangle (3.25, -5);
-    \fill[Peach!20] (3.25, 5.5) rectangle (7.75, -5);
-    \fill[lime!20] (7.75, 5.5) rectangle (14, -5);
+    \fill[RoyalBlue!20, rounded corners=5pt] (-3, 5.5) rectangle (3.25, -7.5);
+    \fill[Peach!20, rounded corners=5pt] (3.25, 5.5) rectangle (7.75, -5);
+    \fill[lime!20, rounded corners=5pt] (7.75, 5.5) rectangle (14, -5);
+    \fill[Rhodamine!20, rounded corners=5pt] (3.25, -5) rectangle (14, -7.5);
     
     % Column headers
-    \node[font=\bfseries\normalsize, fill=none, draw=none] (dataprep) at (0.125, 5) {Dataset \\ preparation};
+    \node[font=\bfseries\normalsize, fill=none, draw=none] (dataprep) at (-0.125, 5) {Dataset \\ preparation};
     \node[font=\bfseries\normalsize, fill=none, draw=none] (seqproc) at (5.5, 5) {Sequence \\ preprocessing};
     \node[font=\bfseries\normalsize, fill=none, draw=none] (phylo) at (10.875, 5) {Phylogenetic \\ analysis};
+    \node[font=\bfseries\normalsize, fill=none, draw=none] (postproc) at (8.625, -5.5) {Post-processing};
     
     % Column 1 - Dataset preparation
-    \node (raw) at (0.125, 3.5) {Raw metadata \\ (Cov3D)~\cite{gowthaman2021}};
-    \node (aug) at (0.125, 1.75) {Augmentation \\ (\gls{pdb}~\cite{berman2000} sequence \\ similarity searches)};
-    \node (download) at (0.125, 0) {Download structures \\ (using biotite~\cite{kunzmann2018})};
-    \node (clean) at (0.125, -1.75) {Cleaning \\ (remove short or \\ heteromeric structures)};
-    \node (3di) at (-1.375, -3.5) {Extract \\ 3Di sequences \\ (using Foldseek~\cite{vankempen2024})};
-    \node[minimum width=2cm] (aa) at (1.625, -3.5) {Extract \\ AA sequences};
+    \node (raw) at (-0.125, 3.5) {Raw metadata};
+    \node (aug) at (-0.125, 1.5) {Data augmentation};
+    \node (download) at (-0.125, -0.5) {Download structures};
+    \node (clean) at (-0.125, -4) {Cleaning \\ (remove short or \\ heteromeric structures)};
+    \node (3di) at (-1.375, -6) {Extract \\ 3Di sequences};
+    \node[minimum width=2cm] (aa) at (1.625, -6) {Extract \\ AA sequences};
+    
     % Column 1 arrows
     \draw[arrow] (raw) -- (aug) node[midway, right, font=\small, fill=none, draw=none] {$n = 1,932$};
-    \draw[arrow] (aug) -- (download) node[midway, right, font=\small, fill=none, draw=none] {$n = 2,132$};
-    \draw[arrow] (download) -- (clean);
+    \draw[arrow] (raw) -- (aug) node[midway, left, font=\scriptsize, fill=none, draw=none] {\textit{Cov3D}~\cite{gowthaman2021}};
+    \draw[arrow] (aug) -- (download) node[midway, right, font=\small, fill=none, draw=none] {$n = 2,113$};
+    \draw[arrow] (aug) -- (download) node[midway, left, font=\scriptsize, fill=none, draw=none] {\textit{PDB~\cite{rose2010} sequence} \\ similarity searches};
+    \draw[arrow] (download) -- (clean) node[midway, left, font=\scriptsize, fill=none, draw=none] {\textit{biotite}~\cite{kunzmann2018}};
+    \draw[arrow] (download) -- (clean) node[midway, right, fill=none, draw=none] {\includegraphics[width=2.1cm]{img/6VXX.png}};
     \draw[arrow] (clean) -- (3di);
-    \draw[arrow] (clean) -- (aa) node[midway, right, font=\small, fill=none, draw=none] {$n = 1,024$};
+    \draw[arrow] (clean) -- (aa) node[midway, right, font=\small, fill=none, draw=none] {$n = 676$};
     
     % Column 2 - Sequence preprocessing
-    \node (align) at (5.5, 3.5) {Align \\ (using MAFFT~\cite{katoh2013})};
-    \node (trim) at (5.5, 2) {Trim gappy regions \\ (using trimal~\cite{capella2009})};
+    \node (align) at (5.5, 3.5) {Align};
+    \node (trim) at (5.5, 2) {Remove gappy sites};
     \node (deduplicate) at (5.5, 0.5) {Deduplicate \\ (and drop gappy \\ sequences)};
     \node (subset) at (5.5, -1.25) {Subset @ x \\ Sample $x$ sequences \\ per virus/major variant};
     % \node (droplowgap) at (8, -1) {Drop gappy sequences};
@@ -56,34 +65,41 @@
     \node[minimum width=1.8cm] (subset3) at (6.5, -3.5) {Subset @ 3};
     
     % Column 2 arrows
-    \draw[arrow] (align) -- (trim);
-    \draw[arrow] (trim) -- (deduplicate);
-    \draw[arrow] (deduplicate) -- (subset) node[midway, right, font=\small, fill=none, draw=none] {$n = 263$};;
+    \draw[arrow] (align) -- (trim) node[midway, left, font=\scriptsize, fill=none, draw=none] {\textit{MAFFT}~\cite{katoh2013}};
+    \draw[arrow] (trim) -- (deduplicate) node[midway, left, font=\scriptsize, fill=none, draw=none] {\textit{trimal}~\cite{capella2009}};
+    \draw[arrow] (deduplicate) -- (subset) node[midway, right, font=\small, fill=none, draw=none] {$n = 257$};
     \draw[arrow] (subset) -- (subset1) node[midway, left, xshift=0.4cm, font=\small, fill=none, draw=none] {$n = 36$};
     \draw[arrow] (subset) -- (subset3) node[midway, right, xshift=-0.4cm, font=\small, fill=none, draw=none] {$n = 62$};
     
     % Column 3 - Phylogenetic analysis
-    \node[text width=2cm] (iqtreebase) at (12.5, 3.25) {Subset @ 3: \\determine substitution model using MFP~\cite{kalyaanamoorthy2017}};
-    \node (cut) at (9.5, 3.5) {Subset @ 1: \\ cut sequences \\ into $m$ chunks \\ (120 residues)};
-    \node (iqtreecut) at (11, 1) {Subset @ 1: \\ run IQ-TREE~\cite{minh2020} on \\ each chunked MSA};
-    \node (maststart) at (11, -0.5) {Subset @ 1: \\ run MAST~\cite{wong2024} \\ using all $m$ trees};
-    \node (mastiter) at (11, -2.5) {Subset @ 1: \\ repeat MAST \\ with top \\ $m-1, \ldots, 2$ trees \\ w.r.t. weight};
+    \node[text width=2cm] (iqtreebase) at (12.5, 3.5) {Subset @ 3: \\determine substitution model};
+    \node (cut) at (9.5, 3.5) {Subset @ 1: \\ cut sequences \\ into $m$ chunks \\ (150 residues)};
+    \node (iqtreecut) at (11, 1.5) {Subset @ 1: \\ run IQ-TREE~\cite{minh2020} \\ on each chunked MSA};
+    \node (maststart) at (11, -0.25) {Subset @ 1: \\ run MAST~\cite{wong2024} \\ using all $m$ trees};
+    \node (mastiter) at (11, -2.25) {Subset @ 1: \\ repeat MAST with top \\ $m-1, \ldots, 2$ trees \\ w.r.t. likelihood};
+    \node (bic) at (11, -4.25) {Model selection \\ (criterion: BIC)};
     
     % Column 3 arrows
-    \draw[arrow] (iqtreebase) -- (iqtreecut);
+    \draw[arrow] (iqtreebase) -- (iqtreecut) node[midway, right, xshift=-0.8cm, font=\tiny, fill=none, draw=none, color=black] {\textit{MFP}~\cite{kalyaanamoorthy2017}};
     \draw[arrow] (cut) -- (iqtreecut);
     \draw[arrow] (iqtreecut) -- (maststart);
     \draw[arrow] (iqtreebase) to [bend left=40] (maststart);
     \draw[arrow] (iqtreebase) to [bend left=45] (mastiter);
     \draw[arrow] (iqtreecut) to [bend right=65] (mastiter);
     \draw[arrow] (maststart) -- (mastiter);
+    \draw[arrow] (mastiter) -- (bic);
+
+    % Block 4 - postprocessing
+    \node (domain) at (5.5, -6.5) {Protein domain \\ extraction};
+    \node[fill=none, draw=none, font=\scriptsize] at (5.5, -7.1) {\textit{InterProScan}~\cite{jones2014}};
+    \node (treefeat) at (11, -6.5) {Phylogenetic tree \\ feature extraction \\ (e.g., clock-likeness~\cite{zuckerkandl1962})};
     
     % Curved arrows between columns
-    \draw[dinterm, blue!70] (aa.east) -- (3.25, -3.5);
-    \draw[dinterm, blue!70] (3.25, -3.5) -- (3.25, 5);
-    \draw[dinterm, blue!70] (3di.south) -- (-1.375, -4.5);
-    \draw[dinterm, blue!70] (-1.375, -4.5) -- (3.25, -4.5);
-    \draw[dinterm, blue!70] (3.25, -4.5) -- (3.25, -3.5);
+    \draw[dinterm, blue!70] (aa.east) -- (3.25, -6);
+    \draw[dinterm, blue!70] (3.25, -6) -- (3.25, 5);
+    \draw[dinterm, blue!70] (3di.south) -- (-1.375, -7) node[midway, left, xshift=0.4cm, font=\scriptsize, fill=none, draw=none, color=black] {\textit{Foldseek}~\cite{vankempen2024}};
+    \draw[dinterm, blue!70] (-1.375, -7) -- (3.25, -7);
+    \draw[dinterm, blue!70] (3.25, -7) -- (3.25, -6);
     \draw[darrow, blue!70] (3.25, 5) -- (seqproc.west);
     \draw[dinterm, red!70] (subset3.east) -- (7.75, -3.5);
     \draw[dinterm, red!70] (subset1.south) -- (4.5, -4);
@@ -91,8 +107,10 @@
     \draw[dinterm, red!70] (7.75, -4) -- (7.75, -1.5);
     \draw[dinterm, red!70] (7.75, -1.5) -- (7.75, 5);
     \draw[darrow, red!70] (7.75, 5) -- (phylo.west);
+    \draw[darrow, red!70] (subset1.south) to [bend right=40] (domain.north);
+    \draw[darrow, OliveGreen!80] (bic.south) to [bend left=40] (treefeat.north);
     
     \end{tikzpicture}
-    \caption{Data processing and analysis workflow for the analysis of experimental spike glycoprotein structures from betacoronaviruses.}
+    \caption{Data processing and analysis workflow for the analysis of experimental spike glycoprotein structures from betacoronaviruses. The molecular structure image of PDB ID 6VXX~\cite{walls2019}, obtained from the RCSB PDB (\url{https://rcsb.org}) using Mol*~\cite{sehnal2021}, depicts a spike protein of a wild type SARS-CoV-2 bound with 2-acetamido-2-deoxy-beta-D-glucopyranose (NAG). MFP: ModelFinder Plus~\cite{kalyaanamoorthy2017}. BIC: Bayesian Information Criterion.}
     \label{fig:bcov3d_dag}
-\end{figure}
+\end{figure*}

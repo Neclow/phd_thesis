@@ -1,0 +1,99 @@
+
+% Key features are still missing to make the software fully-fledged and attractive to the bioinformatics community, notably phylogenetic inference. 
+
+% the super-exponential nature of tree space makes scalability a considerable challenge for deep learning-based solutions.
+
+%  % First, ``true" evolutionary trees may be difficult or impossible to establish. For some loci or genes involving reticulate processes (e.g., recombination), binary trees may provide an incomplete picture of evolutionary history~\cite{huson2006, wong2024}. 
+
+% Whereas 
+
+% may be difficult or impossible to definitively establish, particularly when  are involved. simualtions
+
+% % it is not immediately differentiable due to its recursive nature.
+
+% However, building a comprehensive and plausible training dataset is nontrivial. \textcolor{red}{True trees may be difficult if not impossible to infer, e.g. in the case of reticulate processes (tree mixtures and phylo networks might be better). Second, what is a true tree anyway? Third, model of evolution?}. In addition, a deep learning approach would need to be both sufficiently flexible and scalable to incorporate a hugely variable-length input and predict a single tree from a potentially exponentially vast tree space. \textcolor{red}{chaos game representation for sequences~\cite{jeffrey1990}, representing sequences as text (hydra)}. \textcolor{red}{graphvae, graphrnn, diffusion have potential to generate trees/graphs (phylovae?)}, but they are poorly scalable. \textcolor{red}{phyloformer does not beat iqtree, and is worse as the number of sequences grows. gradme = not deep learning but gradient based, not better than iqtree.}. Thus, a body of research at the intersection of deep learning and phylogenetics is consacred to optimizing model parameters: ModelTeller, PhyloDeep~\cite{voznica2022} etc. This also constitutes a promising avenue for phylo2vec usage. \textcolor{red}{I have thought of MCTS for phylo2vec inference, but scalability remains an issue}.
+
+
+% For protein Foldseek's 3Di alphabet
+
+% \textcolor{red}{The second study of this thesis aimed at exploring the potential added value of data from protein structures into giving insights on viral/pathogenic evolution. Mixed bag of results, difficult problem. Foldseek trained on a cluster of proteins and may not be fine-grained enough to accurately model all angles?} 
+% In molecular phylogenetic inference, input data typically consists of $N$ molecular sequences and the output typically consists of an optimal bifurcating tree (and associated parameters), or a distribution of trees in Bayesian phylogenetics.
+
+% \textcolor{red}{chaos game representation}  with deterministic ...  On the one hand, 
+
+% collecting a valid and comprehensive training dataset is a nontrivial task, as obtaining a ``true" bifurcating phylogeny may not be possible. For instance, reticulate processes of evolution such as horizontal gene transfer or recombination cannot accurately be modelled by inferring a single bifurcating tree. Instead, approaches based on mixtures of trees and phylogenetic networks have proved to be more insightful and plausible~\cite{huson2006, wong2024}. 
+
+% is practically impossible, as obtaining a ``true" bifurcating phylogeny may not be possible
+
+% A general deep learning solution would have to face face  due to scalability (tree space grows exponentially) and lack of training data (obtaining a ``true" bifurcating phylogeny is   promising avenue is the inference of model parameters
+
+% Inspired by other tree labelling strategies~\cite{rohlf1983, dinh2010}
+
+% exploring how lesser explored representations of pathogenic data may h
+
+% \textcolor{red}{Despite claims that "we could AlphaFold our way through the next pandemic", I'm not sure. Folding tons of proteins remains expensive, whether with deep learning or x-ray crystallography. Like a lot of things with AI, it's easy to get 90\% there, but the real work is the last 10\%. For pandemic data, this is also the case; currently it's still a doubt whether these systems can help with variant-level/individual-level structures. Whereas there is undoubtedly some value in understanding the structure of antigens, its increased complexity compared to sequences might not provide significant benefits compared to sequence-based phylogenetics. Current research should focus on exploiting "rapid response to fast viral evolution with topology-assisted..." or fine-tuning either protein structure models or structure discretizers such as 3di to single viruses. All in all, this is again a sign that there is not single tool to rule all pandemic problems.}
+
+
+% . This remains a critical aspect of flock management, as 
+
+% Question is whether we can prove that only a part of a farm is infected, limiting the amount of culling, but that's a tough question. But it might help target lab testing, and maybe make the culling happen faster than waiting for lots of deaths to happen. 
+
+
+
+
+% 
+
+
+% As tracking hundreds, if not thousands, of animals using deep learning remains a daunting task, a hybrid system using optical flow and tracking may be a good balance for large-scale settings. One could for instance image a two-camera system: a cheap one, where we could perform basic optical flow surveillance, and a good quality one for tracking. Cheap camera monitors optical flow all the time. If there are zones with (sustained) lower-than-average inactivity, a second camera hooked to a GPU-equipped computer board for tracking tries to assess the welfare of the individual in this zone. This would be a "best of both worlds" strategy: we use cheap optical-flow as it's fast, and restrict the number of animals to track using deep learning. A robot is also envisageble, but that poses additional logistical issues + invasive.
+
+% Consequently, previous research based on optical flow~\cite{dawkins2009, dawkins2021, gebhardt2021} has employed  \gls{cctv} systems with lower resolution, which reduce computational demand at the expense of precision. 
+
+
+% A may be alleviated by opting for continuous monitoring such that  generate single, uninterrupted video recordings instead of temporally fragmented snapshots. But sacrifices in quality will have to be made to avoid having huge data storage (add estimate of file size for 1h 25 fps 1080p video). That is why low-resolution cameras and optical flow are traditionally used, as they do not necessitate high computing power, at the expense of precision. Should we get a decent fine-tuned tracking model or foundation tracking model, real-time analysis may become a possibility, which should be attractive to farmers as they might not want data to be stored for public backlash ethics, reputation damage etc. this would necessitate a more advanced software stack to manage video streams + for fast and efficient processing, as well as compact yet efficient hardware (e.g., single-computer boards and IP cameras). Future models should also be able to not only track and estimate animal pose, but to infer the action or behaviour in real-time.
+
+% However, In a study involving male Peterson Arbor Acre broilers, Pelham (1975) found that broilers housed in smaller pens utilized less total space than broilers housed in larger pens, likely due to reduced movement opportunities. It is possible that space limitations affected the frequency at which locomotion occurred and was observed.
+
+% such as allopreening (i.e, cleaning or grooming feathers of conspecifics) and isolation are 
+
+% A missing quantity that could be extracted from the features is water consumption, which, although heavily correlated to feed usage and body weight, has been shown to be a useful quantity to monitor welfare~\cite{manning2007}. Broiler chickens, contrary to their wild ancestors, have been shown to exert social and gregarious behaviours~\cite{rushen1982, collins2007, vandenoever2021, jackson2025}. Importantly, some gregarious behaviours such as allopreening (i.e, cleaning or grooming feathers of conspecifics) may help alleviate pathogenic transmission by removing external parasites~\cite{bush2018}. Whereas social withdrawal a typical component of sickness behaviour in many animals~\cite{gregory2009, townsend2021}, chickens inoculated with \textit{E. coli} have also displayed strong huddling behaviour~\cite{matthijs2017}. Thus features describing the animals' sociability could also be measured by measuring its distance to its nearest neighbours. Dust bathing could also be monitored, as posited to have a social component in laying hens~\cite{olsson2002, lundberg2003}. Lastly, sleep is also expected to be affected by common avian infections~\cite{johnson1993}.  Overall, more features well help establish a more complete picture of the behavioural profile of different animals.
+
+% Video-based animal surveillance, although a nice concept, is incredibly difficult due to the number of degrees of freedom.
+
+% While optical flow is limited in resolution/precision, deep learning-based tracking is not yet ready for farm-scale/bird-scale environments, where 100/1000+ animals coexist. It has lots of potential, both from a public health and an economic perspective, but scability is currently the Achille's heel. My personal idea would be a two-camera system: one cheap one, where we could perform basic optical flow surveillance. If there are zones with (sustained) lower-than-average inactivity, a second camera hooked to raspberry pi + GPU for tracking tries to assess the welfare of the individual in this zone. This would be a "best of both worlds" strategy: we use cheap optical-flow as it's fast, and restrict the number of animals to track using deep learning. A robot is also envisageble, but that poses additional logistical issues + invasive.
+
+
+
+% This interdisciplinary imperative notwithstanding, 
+
+% markerless behavioral tracking in broiler chickens demonstrates the feasibility of early infection detection through automated surveillance, potentially enabling targeted interventions that mitigate mass culling and associated welfare consequences.
+
+% that pandemic preparedness necessitates transformative approaches to data engineering, cross-disciplinary integration, and analytical innovation across genomic, structural, and behavioural surveillance domains. Through three interconnected studies, I have illustrated how novel data representations and computational methodologies can address critical gaps in pathogen monitoring and disease prediction systems.
+
+% \textcolor{red}{This PhD illustrates the need for collaboration between all sorts of sciences, from agricultural scientists and veterinarians to lab technicians to computer scientists. For vets, there is a need to develop and openly share such data to advance the field. Problematic in industries due to ethical concerns + whistleblowing?}
+
+% \textcolor{red}{Vectorising pandemic data is in any case important because of the sheer volume of data we collect. Terabytes of video data for animal surveillance, terabytes of sequences for large-scale human genomic surveillance, terabytes of protein structures. Being able to efficiently compress data is green (less memory, less heat? etc.), and makes sharing data easier. 
+% From a scientific point of view, pandemic preparedness is hugely multi-faceted. And within each of these facets, the skill sets needed are also diverse. Take chicken study for instance: we have deep learning, videography, microbiology, veterinary science.}
+
+% \textcolor{red}{As the H5N1 epidemic is picking up in poultry farms across the world, it is essential to assist research bodies to avoid spillover into human populations: this includes data management standardization efforts for fast/efficient data sharing, understanding viral evolution using molecular sequences and protein structure, and monitoring animal reservoirs for infectious spreads.}
+
+
+% \textcolor{red}{Summary of the results of the papers and their relation to international state-of-the-art research within the subject area. If required for the studies, information on ethical and legal permits and approvals. Conclusions and perspectives for further research}
+
+
+% Currently limited scope beyond its compression/efficient representation/fast sampling, which are cool but not detrimental problems in phylogenetics. Could be a no free lunch thing, where operations are more difficult to imagine when you start from a vector that describes a branching process vs. an explicit tree itself. Although the new edition of the software in Rust/Python/R has more functionalities, the next step is likely to really dabble further into phylogenetic inference. Another possibility is data visualisation, but that would be a bit far from the original advantages of phylo2vec.
+
+% Although this model has been shown to help provide new insights into structural evolution, it violates the assumption of site independence, which is an assumption of traditional phylogenetic likelihood-based inference~\cite{yang2014}. Indeed, the 3Di structural character inferred from a given amino acid depends not only on the residue's physical properties, but also on carbon atoms and torsion angles from neighbouring residues~\cite{vankempen2024}. 
+
+
+% This limitation highlights the need for further methodological development in structure discretisation methods. 
+
+% Whereas most structural phylogenetics research has focused on resolving evolutionary relationships in and beyond the “twilight zone” of sequence similarity~\cite{rost1999}, \textit{Betacoronavirus} evolution occurs on a much shorter timescale. While previous studies have questioned the reliability of structure-based trees at short timescales for phylogenomics~\cite{mutti2025}, we argue that our results, although not encompassing genome-scale alignments, provide valuable insights into how recombination and mutation shape the evolution of spike protein-binding domains.
+
+
+% mitigate pivot penalties for interdisciplinary research. 
+% \textcolor{red}{Future models should also be able to not only track and estimate animal pose, but to infer the action or behaviour in real-time: this is essential in a behaviour-mediated assessment of welfare context, as we need to distinguish from video situations of welfare impairment/sickness (e.g., visible via ruffled feathers or weird pose) vs. resting state}.
+
+
+% including aggression~\cite{rushen1982}, dust bathing~\cite{olsson2002, lundberg2003}, pecking~\cite{rushen1982, collins2007} and allopreening (i.e, cleaning or grooming feathers of conspecifics)~\cite{bush2018, jackson2025}. Importantly, some gregarious behaviours such as allopreening (i.e, cleaning or grooming feathers of conspecifics) may help alleviate pathogenic transmission by removing external parasites~\cite{bush2018}. Whereas social withdrawal is a typical component of sickness behaviour in many animals~\cite{gregory2009, townsend2021}, Matthijs \textit{et al.} observed pronounced huddling behaviour in \textit{E. coli}-infected chickens housed indoors~\cite{matthijs2017}, a behaviour which may vary with the rearing environment. Nighttime videography through infrared monitoring may also help assess sleep quality which maybe affected by infection~\cite{johnson1993}. Practically, such social behaviours can be quantified using algorithms based on the $k-$nearest neighbour routine. For instance, social interaction can be estimated by measuring the frame-wise distance to the nearest neighbours. These features may complement the methodology presented in this study in future research to obtain a more complete picture of broiler chicken welfare.
+
+% From an engineering perspective, such systems would however require more advanced software capabilities to manage video streams from multiple cameras and rapid model inference using powerful embedded computing boards. 

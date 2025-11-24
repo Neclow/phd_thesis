@@ -1,0 +1,47 @@
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[thick, >=Stealth, scale=1.87]
+        % Nodes
+        \node[circle, fill=black] (6) at (1.5, 2) {};
+        \node[circle, fill=Peach] (4) at (0.5, 1) {};
+        \node[circle, fill=Peach] (5) at (1, 1.5) {};
+        \node[circle, fill=Mahogany] (0) at (0, -0.5) {A};
+        \node[circle, fill=Mahogany] (2) at (1, 0) {B};
+        \node[circle, fill=Mahogany] (1) at (2, 0.5) {C};
+        \node[circle, fill=Mahogany] (3) at (4, -1) {D};
+
+        % Directed edges
+        \draw[->, gray] (6) -- (5);
+        \draw[->, gray] (5) -- (4);
+        \draw[->, gray] (6) -- (3) coordinate[midway] (branch1);
+        \draw[->, gray] (5) -- (1);
+        \draw[->, gray] (4) -- (0);
+        \draw[->, gray] (4) -- (2);
+
+        % Annotations
+        % Root node
+        \draw[->] (2.5, 2.5) node[right]{\textbf{Root node}} -- (6);
+
+        % Internal nodes
+        \draw[->, Peach] (-0.8,1.8) node[left]{\textbf{Internal nodes}} -- (5);
+        \draw[->, Peach] (-0.8,1.6) -- (4);
+
+        % Leaf nodes
+        \node[text=Mahogany] (leaflabel) at (0.5,-1.25) {\textbf{Leaf nodes}};
+        \draw[->, Mahogany] (leaflabel) -- (0);
+        \draw[->, Mahogany] (leaflabel) -- (2);
+
+        % Label
+        \node (clabel) at (2,-0.7) {\textbf{Label}};
+        \draw[->, dashed, black] (clabel) -- (1.center) + (0, -0.12);
+
+        % Branches
+        \draw[->, gray] (4,1.2) node[right]{\textbf{Branch}} -- (branch1);
+
+        % Scale legend
+        \draw[thick, gray] (-1, 2.5) -- ++(1, 0); % a 1-unit horizontal line
+        \node[text=gray] at (-0.5, 2.3) {1 substitution};
+    \end{tikzpicture}
+    \caption{A diagram of a binary, rooted, labelled, non-ultrametric, phylogenetic tree. The Newick representation of this tree is: (((A,B),C),D);.}
+    \label{fig:basictree}
+\end{figure}

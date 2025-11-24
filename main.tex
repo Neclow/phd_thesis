@@ -1,4 +1,6 @@
-\documentclass[11pt, a4paper]{memoir}
+\documentclass[11pt, a4paper, openany]{memoir}
+\setlength{\headheight}{27.2pt}
+
 \let\printglossary\relax
 \let\theglossary\relax
 \let\endtheglossary\relax
@@ -13,6 +15,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[dvipsnames,rgb,table]{xcolor}
 \usepackage[T1]{fontenc}
+% \usepackage{lmodern}
 \usepackage{amsfonts}
 \usepackage{amsmath}
 \usepackage{bm}
@@ -42,6 +45,8 @@
 
 % Glossary
 \usepackage{glossaries}
+\usepackage{glossary-mcols}
+% \setglossarystyle{mcolindex}  % Multi-column index style
 \makenoidxglossaries
 \loadglsentries{0E_Abbreviations.tex}
 
@@ -79,11 +84,11 @@
 % \frontpagedate{Submitted: \today}
 
 \frontpagetitle{Pandemic preparedness in a vector}
-\subtitle{How new representations of data from phylogenetic trees, protein structures, and animal tracking can help understand pandemics}
+\subtitle{How new data representations from phylogenetics, protein structure, and animal tracking can support outbreak intelligence}
 \frontpagedate{Submitted: \today}
 \advisor{Principal supervisor: Samir Bhatt}
 \coadvisor{Co-supervisor: David Duchêne}
-\frontpageimage{example.png}
+\frontpageimage{img/bcov3d_structrures_v4.png}
 
 \kupdfsetup{}{}{Neil Alexandre Scheidwasser}
 
@@ -102,9 +107,29 @@
 }
 \renewcommand*\contentsname{Table of Contents}
 
-\usepackage[style=nature, autocite=superscript, natbib=true, uniquename=init]{biblatex}
-\addbibresource{References.bib}
+\usepackage[style=nature, autocite=superscript, natbib=true, doi=true, uniquename=init]{biblatex}
+\AtEveryBibitem{%
+  \ifentrytype{article}{\clearfield{note}}{}%
+}
+\AtEveryBibitem{%
+  \ifentrytype{article}{\clearfield{url}}{}%
+}
+\AtEveryBibitem{%
+  \ifentrytype{article}{\clearfield{urldate}}{}%
+}
+\AtEveryBibitem{%
+  \ifentrytype{incollection}{\clearfield{url}}{}%
+}
+\AtEveryBibitem{%
+  \clearfield{month}%
+}
+\AtEveryBibitem{%
+  \clearfield{language}%
+  \clearlist{language}%
+}
+\addbibresource{references.bib}
 \renewcommand{\cite}{\autocite}
+\renewcommand*{\bibfont}{\footnotesize}
 
 %% ======= New commands =======
 % bigO
@@ -134,14 +159,13 @@
 \section*{Scientific Contributions}
 \input{0D_Contributions}
 \clearpage
-% \section*{Abbreviations}
 \setglossarysection{section}
 \printnoidxglossary[title=Abbreviations]
 \clearpage
 
 \tableofcontents
 
-\chapter{Introduction}
+\chapter{Introduction and Objectives}
 \input{01_Introduction}
 
 \chapter{Background}
@@ -156,11 +180,11 @@
 \chapter{Discussion}
 \input{05_Discussion}
 
-\chapter{Conclusion}
+% \chapter{Conclusion}
 
-\clearpage
 \begin{refcontext}
     \small
+    \setlength{\bibitemsep}{0pt}
     \printbibliography
 \end{refcontext}
 
@@ -169,10 +193,16 @@
 \chapter{Articles included in this thesis}
 \label{appendix:articles}
 \includepdf[pages=-]{papers/phylo2vec_sysbio.pdf}
-\includepdf[pages=-]{papers/phylo2vec_joss.pdf}
+\includepdf[pages=-]{papers/phylo2vec_sysbio_appendix.pdf}
+\includepdf[pages=-]{papers/phylo2vec_joss_view.pdf}
+\includepdf[pages=-]{papers/bcov3d_draft_npg.pdf}
 \includepdf[pages=-]{papers/chicken_rsos.pdf}
+\includepdf[pages=-]{papers/chicken_rsos_appendix.pdf}
 
-\chapter{Co-authorship declaration}
-
+\chapter{Co-authorship declarations}
+\includepdf[pages=-]{coauthor/phylo2vec1.pdf}
+\includepdf[pages=-]{coauthor/phylo2vec2.pdf}
+\includepdf[pages=-]{coauthor/bcov3d.pdf}
+\includepdf[pages=-]{coauthor/chicken_rsos.pdf}
 \end{appendix}
 \end{document}
