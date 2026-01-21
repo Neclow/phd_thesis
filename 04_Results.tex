@@ -38,7 +38,7 @@ phylo2vec also allows for fast comparison of binary trees, as illustrated by the
     \label{fig:p2v_dist}
 \end{figure}
 
-Due to its unidimensional vector nature, an immediate property of phylo2vec is its compact format (Fig.~\ref{fig:p2v_compression}). For tree topologies, a phylo2vec vector occupies less memory than the Newick format for trees with 100 leaves or more, and the compression ratio reaches 6x using 16-bit integers (up to $\approx$ 32,000 leaves) and 3x using 32-bit integers (Fig.~\ref{fig:p2v_vs_nwk_int}). For trees with branch lengths, phylo2vec is preferable for large trees (10,000 leaves or more), where the compression ratio reaches 10x for 100,000 leaves (Fig.~\ref{fig:p2v_vs_nwk_float}).
+Due to its unidimensional vector nature, an immediate property of phylo2vec is its compact format (Fig.~\ref{fig:p2v_compression}). For tree topologies, a phylo2vec vector occupies less memory than the Newick format for trees with 100 leaves or more, and the compression ratio reaches 6x using 16-bit integers (up to $\approx$ 32,000 leaves) and 3x using 32-bit integers (Fig.~\ref{fig:p2v_vs_nwk_int}). For trees with branch lengths, this compression ranges from 2x (10 leaves, float64) to 5x (10,000 leaves, float32) (Fig.~\ref{fig:p2v_vs_nwk_float}).
 
 Saving thousands of trees, an operation typically performed in Bayesian phylogenetics involving \gls{mcmc} sampling, can also be optimised using phylo2vec. Although standard file compression (e.g., using \texttt{gzip}) already enables some significant savings, saving 10,000 trees in phylo2vec format can be approximately 5 to 50 times more efficient in terms of file size than a plain-text counterpart (Fig.~\ref{fig:p2v_vs_nwk_int_files},~\ref{fig:p2v_vs_nwk_float_files}).
 
