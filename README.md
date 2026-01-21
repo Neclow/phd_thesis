@@ -1,11 +1,17 @@
-# ku-frontpage
+# PhD Thesis
 
-A LaTeX package for use at University of Copenhagen.
+Title: Pandemic preparedness in a vector
+
+Subtitle: How new data representations from phylogenetics, protein structure, and animal tracking can support outbreak intelligence
+
+Submitted: October 10, 2025
+
+## Installation
+
+This thesis is based on a LaTeX package for use at University of Copenhagen.
 
 Intended to create a titlepage that resembles as closely as possible the official design for Master projects and PhD theses.
 The Microsoft Word templates can be found at https://designguide.ku.dk/.
-
-## Installation
 
 Just copy the `ku-frontpage.sty` and the `logos` folder into your current working directory.
 You can then include the package with for example:
@@ -75,10 +81,6 @@ use something like in the following example:
 \endgroup
 ```
 Replace `LinuxLibertineT-OsF` by the font of your choice.
-
-## Examples
-
-The file `example.tex` contains an example.
 
 ## Legal
 
