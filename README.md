@@ -4,103 +4,14 @@ Title: Pandemic preparedness in a vector
 
 Subtitle: How new data representations from phylogenetics, protein structure, and animal tracking can support outbreak intelligence
 
-Submitted: October 10, 2025
+Submitted: Oct 10, 2025
 
-## Installation
+Accepted: Jan 23, 2026
 
-This thesis is based on a LaTeX package for use at University of Copenhagen.
+## Abstract
 
-Intended to create a titlepage that resembles as closely as possible the official design for Master projects and PhD theses.
-The Microsoft Word templates can be found at https://designguide.ku.dk/.
+The COVID-19 pandemic is a testament to the complexity of preparedness and response to infectious disease outbreaks. From a governance perspective, it required coordinated efforts at a national and an international scale. From a logistics perspective, it required resilient supply chains to deliver medical equipment and vaccines. From a scientific perspective, unprecedented efforts in genomic testing, sequencing, and modelling were conducted to study how the pathogen spread and evolved. However, comprehensive outbreak response may not solely hinge on large-scale genomic surveillance. For instance, register data in Denmark was central to uncovering regional and demographic patterns of infection. In that light, leveraging complementary data streams can provide valuable insights into the dynamics of outbreaks. These can include molecular data on biophysical interactions between pathogens and host receptors, and ecological data from non-invasive monitoring systems in animal reservoir species. These data types are highly complex, and developing computationally efficient analysis methods is paramount to translate data into actionable insights within operationally relevant time frames. With that in mind, this thesis explores how our understanding of pandemics can be advanced using novel data representations of phylogeny, protein structure, and animal behaviour.
 
-Just copy the `ku-frontpage.sty` and the `logos` folder into your current working directory.
-You can then include the package with for example:
+First, I developed phylo2vec, a mathematical integer vector representation of binary phylogenetic trees. Designed with efficient sampling and data storage in mind, this compact representation paves the way for scalable analysis of phylogenetic data using modern machine learning techniques. Exploring a second data stream, I used protein structures to investigate the evolutionary mechanisms underlying the affinity of *Betacoronavirus* spike proteins to host receptors. By casting protein structures into a discrete representation, I found that the use of the human ACE2 receptor is linked with molecular recombination in the S1 subunit and mutation in its N-terminal domain. Meanwhile, structural data suggest that receptor switching is mediated through gradual structural refinements within the receptor-binding domain rather than large-scale conformational reorganisation. In the third data stream, I investigated the feasibility of detecting early infection signatures in broiler chickens using deep learning-based animal tracking. Using *Escherichia coli*, a major threat in poultry farming in Denmark, as a model pathogen, I found evidence that simple behavioural patterns tracked from videography are associated with impaired welfare. This result showcases the potential of artificial intelligence to power low-cost solutions for epidemic monitoring in poultry populations, enabling the automated transformation of video surveillance into quantitative animal welfare metrics.
 
-```latex
-\usepackage[english, science]{ku-frontpage}
-```
-
-## Options
-
-##### Options when including the package
-
-Name                  | Available options               | Default     | Notes
----                   | ---                             | ---         | ---
-Language              | `english`, `danish`             | `english`   |
-Faculty               | `science`, `sund`, `samf`, `ku` | `science`   | Will change the logo and text at the top of the page accordingly.
-Hyperref?             | `hyperref`                      |             | Enables the hyperref package and sets default.
-Drop caps?            | `dropcaps`                      |             | Will allow you to include drop caps with `\lettrine{D}{rop caps}`.
-Submission statement? | `submissionstatement`           |             | Adds the mandatory statment "This thesis has been submitted [...]" for PhD theses
-
-##### Commands for changing the text
-
-Name                         | Function                                                                                      | Example
----                          | ---                                                                                           | ---
-`\author{...}`               | Sets the author.                                                                              | `\author{Mads Ohm Larsen}`
-`\title{...}`                | Sets the title of the document.                                                               | `\title{Quasicrystal Simulation}`
-`\subtitle{...}`             | Sets the subtitle of the document.                                                            | `\subtitle{An investigation}`
-`\date{...}`                 | Sets the date of the document.                                                                | `\date{Handed in: \today}`
-`\frontpageauthor{...}`      | Sets the author for the frontpage, only needed as a workaround, see known issues below.       | `\frontpageauthor{Mads Ohm Larsen}`
-`\frontpagetitle{...}`       | Sets the title for the frontpage, only needed as a workaround, see known issues below.        | `\frontpagetitle{Quasicrystal Simulation}`
-`\frontpagesubtitle{...}`    | Sets the subtitle for the frontpage, only needed as a workaround, see known issues below.     | `\frontpagesubtitle{An investigation}`
-`\frontpagedate{...}`        | Sets the date for the frontpage, only needed as a workaround, see known issues below.         | `\frontpagedate{Handed in: \today}`
-`\assignment{...}`           | Sets the assignment type.                                                                     | `\assignment{PhD thesis}`
-`\advisor{...}`              | Sets the advisor.                                                                             | `\advisor{Advisor: Anders Andersen}`
-`\frontpageimage{...}`       | Sets the image for the titlepage                                                              | `\frontpageimage{example.png}`
-`\kupdfsetup{...}{...}{...}` | Sets various information in the result PDF. Requires the `hyperref` option.                   | `\kupdfsetup{My title}{My subject}{My name}`
-`\submissionstatement{}`     | Sets custom text to be used at the bottom of the titlepage                                    | `\submissionstatement{This thesis has been submitted elsewhere}`
-
-You can disable a command, by setting it to nothing, for example if you do not want a subtitle, you can use `\subtitle{}`.
-
-For SUND and SCIENCE the submission statements required as of 2021-04 are
-automatically set, but you can still override them with `\submissionstatement{}`.
-
-Three colors are also defined as well as a setting for current color.
-These are `KU`, `KUsund`, and `KUscience`.
-Using `\KUCOLOR` will give you the KU color.
-
-## Known issues
-
-`ku-frontpage` patches commands such as `\author` to extract the information
-needed for the frontpage. This fails for some combinations of LaTeX
-distributions and document classes (for example the `memoir` class). If
-patching fails, a warning message in the compilation log will point this out as
-well as what to do; An alternative command to set e.g. the author for the
-frontpage will be provided, prefixed with `frontpage`, so for example
-`\frontpageauthor`. You will still need to use the usual `\author` command
-provided by the document class.
-
-## Fonts
-
-You may want to use a different font for the titlepage. In this case, you can
-use something like in the following example:
-```
-\begingroup
-  \fontencoding{T1}\fontfamily{LinuxLibertineT-OsF}\selectfont
-  \maketitle
-\endgroup
-```
-Replace `LinuxLibertineT-OsF` by the font of your choice.
-
-## Legal
-
-The UCPH logo is protected by a European patent.
-The files in the logos folder can be freely distributed and used as part of the ku-frontpage project by current/former students at UCPH in connection with UCPH projects.
-
-For more information go to [the official design guide](http://designguide.ku.dk/om_design/varemaerkebeskyttelse/).
-
----
-
-Copyright 2021 Mads Ohm Larsen
-
-Copyright 2021 Malte Leip <malte@leip.net>
-
-The package is distributed under the terms of the MIT License:
-
----
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+Collectively, this thesis illustrates that pandemic preparedness research is inherently interdisciplinary. It shows that diverse data streams can be incorporated into health infrastructures via advanced data engineering. Beyond conventional genetic and video-based surveillance, new analytical methods will accelerate pathogen detection and analysis capabilities and deepen our understanding of emerging infectious disease threats.
