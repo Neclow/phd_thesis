@@ -4,7 +4,7 @@ Title: Pandemic preparedness in a vector
 
 Subtitle: How new data representations from phylogenetics, protein structure, and animal tracking can support outbreak intelligence
 
-Submitted: October 10, 2025
+Submitted: Oct 10, 2025
 
 Accepted: Jan 23, 2026
 
